@@ -27,7 +27,7 @@ function CandidatesPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("candidates")
-        .select("*, applications(applied_at)")
+        .select("*, applications(applied_at, ai_score)")
         .limit(1000);
       if (error) throw error;
       return data || [];
@@ -38,7 +38,9 @@ function CandidatesPage() {
     let r = (candidates.data || []).map((c: any) => {
       const apps = c.applications || [];
       const last = apps.length ? apps.reduce((a: any, b: any) => (new Date(b.applied_at) > new Date(a.applied_at) ? b : a)).applied_at : null;
-      return { ...c, app_count: apps.length, last_applied: last };
+      const scored = apps.filter((a: any) => a.ai_score != null);
+      const avg = scored.length ? scored.reduce((s: number, a: any) => s + a.ai_score, 0) / scored.length : null;
+      return { ...c, app_count: apps.length, last_applied: last, avg_score: avg };
     });
     if (search) {
       const q = search.toLowerCase();
