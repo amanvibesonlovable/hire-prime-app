@@ -13,6 +13,7 @@ import { StatusBadge, DepartmentBadge } from "@/components/StatusBadge";
 import { JobFormModal } from "@/components/JobFormModal";
 import { KanbanBoard } from "@/components/KanbanBoard";
 import { formatSalary } from "@/lib/format";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/_app/jobs/$jobId")({
   component: JobDetail,

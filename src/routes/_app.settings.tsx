@@ -18,6 +18,7 @@ export const Route = createFileRoute("/_app/settings")({
 });
 
 function SettingsPage() {
+  useDocumentTitle("Settings — Meridian");
   const { user, profile, signOut } = useAuth();
   const qc = useQueryClient();
   const [show, setShow] = useState(false);
