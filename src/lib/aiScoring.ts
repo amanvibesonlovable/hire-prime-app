@@ -110,6 +110,8 @@ export async function runScoringForApplication(applicationId: string, apiKey: st
 export function aiErrorToToast(e: unknown): string {
   const msg = e instanceof Error ? e.message : String(e);
   if (msg === "INVALID_KEY") return "Invalid API key. Please check your key in Settings.";
+  if (msg === "RATE_LIMITED") return "Rate limited. Please wait a moment and try again.";
+  if (msg === "MODEL_NOT_FOUND") return "AI model not available. Please try again later.";
   if (msg === "NO_RESUME" || msg === "EMPTY_TEXT")
     return "Could not read this resume PDF. The file may be missing or corrupted.";
   if (msg === "UNPARSEABLE") return "AI scoring failed — unexpected response. Please try again.";
