@@ -113,22 +113,22 @@ function LoginPage() {
           preserveAspectRatio="xMidYMid slice"
           aria-hidden
         >
-          {/* Main arc */}
+          {/* Main sweeping S-curve arc */}
           <path
-            d="M -50 750 Q 200 400, 650 100"
+            d="M -80 780 C 100 600, 250 350, 680 80"
             fill="none"
             stroke="#3B82F6"
-            strokeOpacity="0.3"
+            strokeOpacity="0.32"
             strokeWidth="1"
             style={{
-              strokeDasharray: 1400,
-              strokeDashoffset: mounted ? 0 : 1400,
+              strokeDasharray: 1500,
+              strokeDashoffset: mounted ? 0 : 1500,
               transition: "stroke-dashoffset 2s ease-out",
             }}
           />
-          {/* Dotted parallel arc */}
+          {/* Dotted parallel arc — slightly offset */}
           <path
-            d="M -20 800 Q 250 450, 700 150"
+            d="M -40 820 C 160 660, 320 410, 720 140"
             fill="none"
             stroke="#3B82F6"
             strokeOpacity="0.15"
@@ -139,19 +139,32 @@ function LoginPage() {
               transition: "opacity 2s ease-out 0.3s",
             }}
           />
+          {/* Third faint arc — deepest layer */}
+          <path
+            d="M 20 860 C 220 720, 400 470, 760 200"
+            fill="none"
+            stroke="#3B82F6"
+            strokeOpacity="0.08"
+            strokeWidth="1"
+            strokeDasharray="1 8"
+            style={{
+              opacity: mounted ? 1 : 0,
+              transition: "opacity 2s ease-out 0.5s",
+            }}
+          />
         </svg>
 
-        {/* Glowing dots */}
+        {/* Glowing dots — positioned along main arc */}
         <div
           aria-hidden
           className="absolute rounded-full"
           style={{
-            left: "15%",
-            top: "65%",
-            width: 6,
-            height: 6,
+            left: "10%",
+            top: "72%",
+            width: 5,
+            height: 5,
             background: "#3B82F6",
-            boxShadow: "0 0 12px #3B82F6, 0 0 24px rgba(59,130,246,0.25)",
+            boxShadow: "0 0 10px #3B82F6, 0 0 20px rgba(59,130,246,0.25)",
             opacity: mounted ? 1 : 0,
             transition: "opacity 500ms ease-out 1s",
           }}
@@ -160,27 +173,28 @@ function LoginPage() {
           aria-hidden
           className="absolute rounded-full"
           style={{
-            left: "42%",
-            top: "38%",
-            width: 7,
-            height: 7,
+            left: "32%",
+            top: "48%",
+            width: 5,
+            height: 5,
             background: "#3B82F6",
-            boxShadow: "0 0 12px #3B82F6, 0 0 24px rgba(59,130,246,0.25)",
+            boxShadow: "0 0 10px #3B82F6, 0 0 20px rgba(59,130,246,0.25)",
             opacity: mounted ? 1 : 0,
             transition: "opacity 500ms ease-out 1.2s",
           }}
         />
-        {/* Brightest dot — sun at meridian peak */}
+        {/* Brightest dot — sun at meridian peak (on arc, upper area) */}
         <div
           aria-hidden
           className="absolute rounded-full"
           style={{
-            right: "15%",
-            top: "20%",
+            right: "12%",
+            top: "16%",
             width: 10,
             height: 10,
             background: "#FFFFFF",
-            boxShadow: "0 0 16px #3B82F6, 0 0 32px rgba(59,130,246,0.5), 0 0 48px rgba(59,130,246,0.3)",
+            boxShadow:
+              "0 0 16px #3B82F6, 0 0 40px rgba(59,130,246,0.5), 0 0 80px rgba(59,130,246,0.2)",
             opacity: mounted ? 1 : 0,
             transition: "opacity 500ms ease-out 1.4s",
           }}
