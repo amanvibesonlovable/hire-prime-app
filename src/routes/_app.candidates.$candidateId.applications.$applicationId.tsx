@@ -1,12 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useState, useMemo, useEffect, type ComponentType } from "react";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
-import { configurePdfWorker } from "@/lib/pdfWorker";
+import { useMemo, useState } from "react";
 import {
   ArrowLeft, Mail, Phone, Linkedin, Download, Sparkles, CheckCircle, AlertCircle,
-  ZoomIn, ZoomOut, Star, UserPlus, FileX, Loader2,
+  Star, UserPlus, FileX, Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -183,25 +180,6 @@ function ApplicationDetail() {
 }
 
 function ResumeBlock({ url }: { url: string | null }) {
-  const [pages, setPages] = useState(0);
-  const [scale, setScale] = useState(1);
-  const [pdfComponents, setPdfComponents] = useState<{
-    Document: ComponentType<any>;
-    Page: ComponentType<any>;
-  } | null>(null);
-  const file = useMemo(() => (url ? { url } : null), [url]);
-
-  useEffect(() => {
-    let cancelled = false;
-    void import("react-pdf").then((module) => {
-      configurePdfWorker(module.pdfjs);
-      if (!cancelled) setPdfComponents({ Document: module.Document, Page: module.Page });
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   if (!url) {
     return (
       <div className="bg-surface border border-border rounded-lg p-6">
@@ -216,9 +194,6 @@ function ResumeBlock({ url }: { url: string | null }) {
     );
   }
 
-  const PdfDocument = pdfComponents?.Document;
-  const PdfPage = pdfComponents?.Page;
-
   return (
     <div className="bg-surface border border-border rounded-lg p-5">
       <div className="flex items-center justify-between mb-4">
@@ -227,29 +202,13 @@ function ResumeBlock({ url }: { url: string | null }) {
           <Button variant="outline" size="sm"><Download className="h-3.5 w-3.5" /> Download</Button>
         </a>
       </div>
-      <div className="flex items-center justify-end gap-2 mb-2">
-        <Button variant="ghost" size="sm" onClick={() => setScale((s) => Math.max(0.5, s - 0.1))}><ZoomOut className="h-4 w-4" /></Button>
-        <span className="text-[12px] font-mono text-muted-foreground w-12 text-center">{Math.round(scale * 100)}%</span>
-        <Button variant="ghost" size="sm" onClick={() => setScale((s) => Math.min(2, s + 0.1))}><ZoomIn className="h-4 w-4" /></Button>
-      </div>
-      <div className="bg-background border border-border rounded-md h-[500px] overflow-auto p-4 flex flex-col items-center gap-4">
-        {PdfDocument && PdfPage ? (
-          <PdfDocument
-            file={file}
-            onLoadSuccess={({ numPages }: { numPages: number }) => setPages(numPages)}
-            loading={<div className="text-muted-foreground text-sm py-12">Loading PDF...</div>}
-            error={<div className="text-danger text-sm py-12">Failed to load PDF.</div>}
-          >
-            {Array.from({ length: pages }).map((_, i) => (
-              <div key={i} className="border border-border bg-white">
-                <PdfPage pageNumber={i + 1} scale={scale} renderTextLayer={false} renderAnnotationLayer={false} />
-                <div className="bg-background text-center text-[11px] text-muted-foreground py-1">Page {i + 1} of {pages}</div>
-              </div>
-            ))}
-          </PdfDocument>
-        ) : (
-          <div className="text-muted-foreground text-sm py-12">Loading PDF...</div>
-        )}
+      <div className="bg-background border border-border rounded-md h-[500px] overflow-hidden">
+        <iframe
+          src={url}
+          title="Resume PDF"
+          className="h-full w-full border-0"
+          {...{ type: "application/pdf" }}
+        />
       </div>
     </div>
   );

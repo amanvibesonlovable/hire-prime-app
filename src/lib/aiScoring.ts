@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { loadPdfJs } from "@/lib/pdfWorker";
 
 export type AIScoreResult = {
   score: number;
@@ -18,19 +17,17 @@ export async function getApiKey(userId: string): Promise<string | null> {
   return data?.anthropic_api_key ?? null;
 }
 
-export async function extractPdfText(url: string): Promise<string> {
+export async function fetchPdfAsBase64(url: string): Promise<string> {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to download resume");
   const buf = await res.arrayBuffer();
-  const pdfjsLib = await loadPdfJs();
-  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-  let text = "";
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    text += content.items.map((it: any) => it.str).join(" ") + "\n";
+  const bytes = new Uint8Array(buf);
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
   }
-  return text.trim();
+  return btoa(binary);
 }
 
 export async function scoreApplication(params: {
@@ -39,9 +36,9 @@ export async function scoreApplication(params: {
   jobDescription: string;
   jobRequirements: string;
   jobNiceToHaves: string | null;
-  resumeText: string;
+  resumePdfBase64: string;
 }): Promise<AIScoreResult> {
-  const userPrompt = `Evaluate the following resume against the job requirements.
+  const userPrompt = `Evaluate the attached resume PDF against the job requirements.
 
 JOB TITLE: ${params.jobTitle}
 
@@ -53,9 +50,6 @@ ${params.jobRequirements}
 
 NICE TO HAVES:
 ${params.jobNiceToHaves || "None specified"}
-
-RESUME TEXT:
-${params.resumeText}
 
 Respond with a JSON object in this exact format:
 {
@@ -88,7 +82,22 @@ Be objective and specific. Reference actual skills and experience from the resum
       max_tokens: 1024,
       system:
         "You are Meridian AI, an expert recruitment analyst. You evaluate resumes against job requirements with precision, objectivity, and fairness. You NEVER discriminate based on name, gender, ethnicity, age, or any protected characteristic. You focus purely on skills, experience, qualifications, and role fit.\n\nYou must respond ONLY with valid JSON, no additional text, no markdown formatting, no code fences. Just the raw JSON object.",
-      messages: [{ role: "user", content: userPrompt }],
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "document",
+              source: {
+                type: "base64",
+                media_type: "application/pdf",
+                data: params.resumePdfBase64,
+              },
+            },
+            { type: "text", text: userPrompt },
+          ],
+        },
+      ],
     }),
   });
 
@@ -118,8 +127,8 @@ export async function runScoringForApplication(applicationId: string, apiKey: st
   const job = app.job as any;
   if (!candidate?.resume_url) throw new Error("NO_RESUME");
 
-  const resumeText = await extractPdfText(candidate.resume_url);
-  if (!resumeText || resumeText.length < 20) throw new Error("EMPTY_TEXT");
+  const resumePdfBase64 = await fetchPdfAsBase64(candidate.resume_url);
+  if (!resumePdfBase64) throw new Error("EMPTY_TEXT");
 
   const result = await scoreApplication({
     apiKey,
@@ -127,7 +136,7 @@ export async function runScoringForApplication(applicationId: string, apiKey: st
     jobDescription: job.description,
     jobRequirements: job.requirements,
     jobNiceToHaves: job.nice_to_haves,
-    resumeText,
+    resumePdfBase64,
   });
 
   const { error: upErr } = await supabase
@@ -150,7 +159,7 @@ export function aiErrorToToast(e: unknown): string {
   const msg = e instanceof Error ? e.message : String(e);
   if (msg === "INVALID_KEY") return "Invalid API key. Please check your key in Settings.";
   if (msg === "NO_RESUME" || msg === "EMPTY_TEXT")
-    return "Could not extract text from this resume. The PDF may be image-based or corrupted.";
+    return "Could not read this resume PDF. The file may be missing or corrupted.";
   if (msg === "UNPARSEABLE") return "AI scoring failed — unexpected response. Please try again.";
   if (/network|fetch|Failed to download/i.test(msg))
     return "Failed to connect to AI service. Please check your internet connection and try again.";
