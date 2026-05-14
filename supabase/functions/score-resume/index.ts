@@ -77,7 +77,7 @@ Be objective and specific. Reference actual skills from the resume.`;
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-5-20250929",
         max_tokens: 1024,
         system:
           "You are Meridian AI, an expert recruitment analyst. You evaluate resumes against job requirements with precision, objectivity, and fairness. You NEVER discriminate based on name, gender, ethnicity, age, or any protected characteristic. You focus purely on skills, experience, qualifications, and role fit.\n\nYou must respond ONLY with valid JSON, no additional text, no markdown formatting, no code fences. Just the raw JSON object.",
