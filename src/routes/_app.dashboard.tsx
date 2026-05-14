@@ -4,7 +4,7 @@ import {
   Briefcase, Users, FileText, Clock, Workflow, Sparkles, BarChart3,
   FileUp, Search, ClipboardCheck, UserCheck, Mail, CheckCircle, ChevronRight,
 } from "lucide-react";
-import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
+import { XAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { greeting, relTime, initials } from "@/lib/format";
