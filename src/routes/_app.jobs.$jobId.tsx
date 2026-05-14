@@ -13,6 +13,7 @@ import { StatusBadge, DepartmentBadge } from "@/components/StatusBadge";
 import { JobFormModal } from "@/components/JobFormModal";
 import { KanbanBoard } from "@/components/KanbanBoard";
 import { formatSalary } from "@/lib/format";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/_app/jobs/$jobId")({
   component: JobDetail,
@@ -33,6 +34,8 @@ function JobDetail() {
       return data;
     },
   });
+
+  useDocumentTitle(job.data?.title ? `${job.data.title} — Meridian` : "Meridian");
 
   const applyUrl = typeof window !== "undefined" ? `${window.location.origin}/apply/${jobId}` : `/apply/${jobId}`;
 

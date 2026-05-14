@@ -237,8 +237,9 @@ export function KanbanBoard({ jobId, stages }: { jobId: string; stages: string[]
         </div>
       </div>
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-4 overflow-x-auto scrollbar-thin pb-2">
-          {stages.map((stage) => (
+        <div className="relative">
+          <div className="flex gap-4 overflow-x-auto scrollbar-thin pb-2">
+            {stages.map((stage) => (
             <Droppable key={stage} droppableId={stage}>
               {(p, snap) => (
                 <div
@@ -307,6 +308,8 @@ export function KanbanBoard({ jobId, stages }: { jobId: string; stages: string[]
               )}
             </Droppable>
           ))}
+          </div>
+          <div className="pointer-events-none absolute top-0 right-0 bottom-2 w-12 bg-gradient-to-l from-background to-transparent md:hidden" />
         </div>
       </DragDropContext>
     </div>

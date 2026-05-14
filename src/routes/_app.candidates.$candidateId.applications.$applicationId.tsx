@@ -20,6 +20,7 @@ import { AIScoreCircle, recommendationColor, scoreColor } from "@/components/AIS
 import { relTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { getApiKey, runScoringForApplication, aiErrorToToast } from "@/lib/aiScoring";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/_app/candidates/$candidateId/applications/$applicationId")({
   ssr: false,
@@ -66,6 +67,10 @@ function ApplicationDetail() {
       return data || [];
     },
   });
+
+  useDocumentTitle(
+    candidate.data ? `${candidate.data.first_name} ${candidate.data.last_name} — Meridian` : "Meridian",
+  );
 
   if (candidate.isLoading || app.isLoading) {
     return <div className="space-y-4"><div className="skeleton h-12 w-1/3" /><div className="skeleton h-96" /></div>;
@@ -202,7 +207,7 @@ function ResumeBlock({ url }: { url: string | null }) {
           <Button variant="outline" size="sm"><Download className="h-3.5 w-3.5" /> Download</Button>
         </a>
       </div>
-      <div className="bg-background border border-border rounded-md h-[500px] overflow-hidden">
+      <div className="bg-background border border-border rounded-md h-[350px] md:h-[500px] overflow-hidden">
         <iframe
           src={url}
           title="Resume PDF"

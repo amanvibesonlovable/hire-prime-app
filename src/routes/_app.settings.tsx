@@ -11,12 +11,14 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/lib/auth";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/_app/settings")({
   component: SettingsPage,
 });
 
 function SettingsPage() {
+  useDocumentTitle("Settings — Meridian");
   const { user, profile, signOut } = useAuth();
   const qc = useQueryClient();
   const [show, setShow] = useState(false);

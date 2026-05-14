@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DepartmentBadge } from "@/components/StatusBadge";
 import { toast } from "sonner";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/apply/$jobId")({
   component: ApplyPage,
@@ -23,6 +24,8 @@ function ApplyPage() {
       return data;
     },
   });
+
+  useDocumentTitle(job.data?.title ? `Apply — ${job.data.title} — Meridian` : "Meridian");
 
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
@@ -122,15 +125,18 @@ function ApplyPage() {
           This position is no longer accepting applications.
         </div>
       ) : done ? (
-        <div className="text-center py-8 space-y-3">
-          <div className="mx-auto h-14 w-14 rounded-full bg-success/15 flex items-center justify-center animate-in zoom-in duration-300">
+        <div className="text-center py-8 space-y-3 animate-in fade-in zoom-in-95 duration-200">
+          <div className="mx-auto h-14 w-14 rounded-full bg-success/15 flex items-center justify-center">
             <Check className="h-7 w-7 text-success" />
           </div>
           <h2 className="text-[20px] font-semibold">Application Submitted!</h2>
           <p className="text-sm text-muted-foreground">Thank you for applying to {j.title}. Our team will review your application and get back to you.</p>
         </div>
       ) : (
-        <form onSubmit={submit} className="space-y-4">
+        <form
+          onSubmit={submit}
+          className={`space-y-4 transition-opacity duration-200 ${busy ? "opacity-70" : "opacity-100"}`}
+        >
           <div className="grid grid-cols-2 gap-3">
             <Field label="First Name *" error={errors.first}><Input value={first} onChange={(e) => setFirst(e.target.value)} className={errors.first ? "border-danger" : ""} /></Field>
             <Field label="Last Name *" error={errors.last}><Input value={last} onChange={(e) => setLast(e.target.value)} className={errors.last ? "border-danger" : ""} /></Field>
@@ -159,16 +165,17 @@ function ApplyPage() {
           </Button>
         </form>
       )}
-
-      <p className="text-center text-[12px] text-muted-foreground mt-6">Powered by Meridian</p>
     </CenteredCard>
   );
 }
 
 function CenteredCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-10">
+    <div className="min-h-screen radial-glow flex flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-[560px] bg-surface border border-border rounded-lg p-8">{children}</div>
+      <p className="mt-4 text-center text-[12px] text-[#71717A] flex items-center justify-center gap-1">
+        Powered by <span className="font-mono text-foreground/80">M</span> Meridian
+      </p>
     </div>
   );
 }

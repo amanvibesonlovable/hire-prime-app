@@ -10,12 +10,14 @@ import { StatusBadge, DepartmentBadge } from "@/components/StatusBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { JobFormModal } from "@/components/JobFormModal";
 import { relTime } from "@/lib/format";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/_app/jobs")({
   component: JobsPage,
 });
 
 function JobsPage() {
+  useDocumentTitle("Jobs — Meridian");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [dept, setDept] = useState("all");
@@ -57,20 +59,20 @@ function JobsPage() {
         <Button onClick={() => setOpen(true)}><Plus className="h-4 w-4" /> New Job</Button>
       </div>
 
-      <div className="flex flex-wrap gap-3 items-center">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:items-center">
+        <div className="relative w-full sm:flex-1 sm:min-w-[200px] sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Search jobs..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
         <Select value={status} onValueChange={setStatus}>
-          <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-[160px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Statuses</SelectItem>
             {["Open","Draft","Paused","Closed"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={dept} onValueChange={setDept}>
-          <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-[200px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Departments</SelectItem>
             {departments.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
