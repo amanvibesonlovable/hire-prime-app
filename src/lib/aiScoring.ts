@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { pdfjsLib } from "@/lib/pdfWorker";
+import { loadPdfJs } from "@/lib/pdfWorker";
 
 export type AIScoreResult = {
   score: number;
@@ -22,6 +22,7 @@ export async function extractPdfText(url: string): Promise<string> {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to download resume");
   const buf = await res.arrayBuffer();
+  const pdfjsLib = await loadPdfJs();
   const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
   let text = "";
   for (let i = 1; i <= pdf.numPages; i++) {
