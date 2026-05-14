@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Briefcase, MapPin, Plus, Search } from "lucide-react";
@@ -13,8 +13,16 @@ import { relTime } from "@/lib/format";
 import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/_app/jobs")({
-  component: JobsPage,
+  component: JobsRoute,
 });
+
+function JobsRoute() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  if (pathname !== "/jobs") return <Outlet />;
+
+  return <JobsPage />;
+}
 
 function JobsPage() {
   useDocumentTitle("Jobs — Meridian");
