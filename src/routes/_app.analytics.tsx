@@ -459,11 +459,11 @@ async function loadAnalytics(range: Range, dept: string): Promise<AnalyticsData>
     if (!r.lastActive || h.moved_at > r.lastActive) r.lastActive = h.moved_at;
     rec.set(h.moved_by, r);
   });
-  (notes || []).forEach((n) => {
+  (notes || []).forEach((n: any) => {
     if (!n.author_id || !inCurrent(n.created_at)) return;
-    const r = rec.get(n.author_id) || { id: n.author_id, name: profMap.get(n.author_id) || "Unknown", moved: 0, notes: 0, ratings: [], lastActive: null };
+    const r: RecRow = rec.get(n.author_id) || { id: n.author_id, name: profMap.get(n.author_id) || "Unknown", moved: 0, notes: 0, ratings: [], lastActive: null };
     r.notes += 1;
-    if (n.rating != null) r.ratings.push(n.rating);
+    if (n.rating != null) r.ratings.push(n.rating as number);
     if (!r.lastActive || n.created_at > r.lastActive) r.lastActive = n.created_at;
     rec.set(n.author_id, r);
   });
