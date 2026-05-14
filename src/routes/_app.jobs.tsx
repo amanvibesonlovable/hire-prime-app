@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_app/jobs")({
 function JobsRoute() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
-  if (pathname !== "/jobs") return <Outlet />;
+  if (pathname.replace(/\/$/, "") !== "/jobs") return <Outlet />;
 
   return <JobsPage />;
 }

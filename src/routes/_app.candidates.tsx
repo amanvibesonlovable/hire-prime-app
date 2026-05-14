@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Download, Search, Users, ArrowUpDown } from "lucide-react";
@@ -12,8 +12,16 @@ import { relTime } from "@/lib/format";
 import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/_app/candidates")({
-  component: CandidatesPage,
+  component: CandidatesRoute,
 });
+
+function CandidatesRoute() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  if (pathname.replace(/\/$/, "") !== "/candidates") return <Outlet />;
+
+  return <CandidatesPage />;
+}
 
 const PAGE_SIZE = 20;
 

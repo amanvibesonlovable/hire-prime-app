@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { ArrowLeft, Mail, Phone, Linkedin } from "lucide-react";
@@ -8,10 +8,19 @@ import { AIScoreInline } from "@/components/AIScoreBadge";
 import { relTime } from "@/lib/format";
 
 export const Route = createFileRoute("/_app/candidates/$candidateId")({
-  component: CandidateIndex,
+  component: CandidateRoute,
 });
 
-function CandidateIndex() {
+function CandidateRoute() {
+  const { candidateId } = Route.useParams();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  if (pathname.replace(/\/$/, "") !== `/candidates/${candidateId}`) return <Outlet />;
+
+  return <CandidatePage />;
+}
+
+function CandidatePage() {
   const { candidateId } = Route.useParams();
   const navigate = useNavigate();
 
