@@ -15,6 +15,7 @@ import {
   Menu,
   X,
   Play,
+  ChevronDown,
 } from "lucide-react";
 import logoUrl from "@/assets/meridian-logo.png";
 
