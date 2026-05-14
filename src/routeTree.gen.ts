@@ -20,6 +20,7 @@ import { Route as AppCandidatesRouteImport } from './routes/_app.candidates'
 import { Route as AppAnalyticsRouteImport } from './routes/_app.analytics'
 import { Route as AppJobsJobIdRouteImport } from './routes/_app.jobs.$jobId'
 import { Route as AppCandidatesCandidateIdRouteImport } from './routes/_app.candidates.$candidateId'
+import { Route as AppCandidatesCandidateIdApplicationsApplicationIdRouteImport } from './routes/_app.candidates.$candidateId.applications.$applicationId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -76,6 +77,12 @@ const AppCandidatesCandidateIdRoute =
     path: '/$candidateId',
     getParentRoute: () => AppCandidatesRoute,
   } as any)
+const AppCandidatesCandidateIdApplicationsApplicationIdRoute =
+  AppCandidatesCandidateIdApplicationsApplicationIdRouteImport.update({
+    id: '/applications/$applicationId',
+    path: '/applications/$applicationId',
+    getParentRoute: () => AppCandidatesCandidateIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -86,8 +93,9 @@ export interface FileRoutesByFullPath {
   '/jobs': typeof AppJobsRouteWithChildren
   '/settings': typeof AppSettingsRoute
   '/apply/$jobId': typeof ApplyJobIdRoute
-  '/candidates/$candidateId': typeof AppCandidatesCandidateIdRoute
+  '/candidates/$candidateId': typeof AppCandidatesCandidateIdRouteWithChildren
   '/jobs/$jobId': typeof AppJobsJobIdRoute
+  '/candidates/$candidateId/applications/$applicationId': typeof AppCandidatesCandidateIdApplicationsApplicationIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -98,8 +106,9 @@ export interface FileRoutesByTo {
   '/jobs': typeof AppJobsRouteWithChildren
   '/settings': typeof AppSettingsRoute
   '/apply/$jobId': typeof ApplyJobIdRoute
-  '/candidates/$candidateId': typeof AppCandidatesCandidateIdRoute
+  '/candidates/$candidateId': typeof AppCandidatesCandidateIdRouteWithChildren
   '/jobs/$jobId': typeof AppJobsJobIdRoute
+  '/candidates/$candidateId/applications/$applicationId': typeof AppCandidatesCandidateIdApplicationsApplicationIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -112,8 +121,9 @@ export interface FileRoutesById {
   '/_app/jobs': typeof AppJobsRouteWithChildren
   '/_app/settings': typeof AppSettingsRoute
   '/apply/$jobId': typeof ApplyJobIdRoute
-  '/_app/candidates/$candidateId': typeof AppCandidatesCandidateIdRoute
+  '/_app/candidates/$candidateId': typeof AppCandidatesCandidateIdRouteWithChildren
   '/_app/jobs/$jobId': typeof AppJobsJobIdRoute
+  '/_app/candidates/$candidateId/applications/$applicationId': typeof AppCandidatesCandidateIdApplicationsApplicationIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/apply/$jobId'
     | '/candidates/$candidateId'
     | '/jobs/$jobId'
+    | '/candidates/$candidateId/applications/$applicationId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/apply/$jobId'
     | '/candidates/$candidateId'
     | '/jobs/$jobId'
+    | '/candidates/$candidateId/applications/$applicationId'
   id:
     | '__root__'
     | '/'
@@ -153,6 +165,7 @@ export interface FileRouteTypes {
     | '/apply/$jobId'
     | '/_app/candidates/$candidateId'
     | '/_app/jobs/$jobId'
+    | '/_app/candidates/$candidateId/applications/$applicationId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -241,15 +254,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCandidatesCandidateIdRouteImport
       parentRoute: typeof AppCandidatesRoute
     }
+    '/_app/candidates/$candidateId/applications/$applicationId': {
+      id: '/_app/candidates/$candidateId/applications/$applicationId'
+      path: '/applications/$applicationId'
+      fullPath: '/candidates/$candidateId/applications/$applicationId'
+      preLoaderRoute: typeof AppCandidatesCandidateIdApplicationsApplicationIdRouteImport
+      parentRoute: typeof AppCandidatesCandidateIdRoute
+    }
   }
 }
 
+interface AppCandidatesCandidateIdRouteChildren {
+  AppCandidatesCandidateIdApplicationsApplicationIdRoute: typeof AppCandidatesCandidateIdApplicationsApplicationIdRoute
+}
+
+const AppCandidatesCandidateIdRouteChildren: AppCandidatesCandidateIdRouteChildren =
+  {
+    AppCandidatesCandidateIdApplicationsApplicationIdRoute:
+      AppCandidatesCandidateIdApplicationsApplicationIdRoute,
+  }
+
+const AppCandidatesCandidateIdRouteWithChildren =
+  AppCandidatesCandidateIdRoute._addFileChildren(
+    AppCandidatesCandidateIdRouteChildren,
+  )
+
 interface AppCandidatesRouteChildren {
-  AppCandidatesCandidateIdRoute: typeof AppCandidatesCandidateIdRoute
+  AppCandidatesCandidateIdRoute: typeof AppCandidatesCandidateIdRouteWithChildren
 }
 
 const AppCandidatesRouteChildren: AppCandidatesRouteChildren = {
-  AppCandidatesCandidateIdRoute: AppCandidatesCandidateIdRoute,
+  AppCandidatesCandidateIdRoute: AppCandidatesCandidateIdRouteWithChildren,
 }
 
 const AppCandidatesRouteWithChildren = AppCandidatesRoute._addFileChildren(
