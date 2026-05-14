@@ -14,7 +14,247 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      applications: {
+        Row: {
+          ai_score: number | null
+          ai_summary: string | null
+          applied_at: string
+          candidate_id: string
+          current_stage: string
+          id: string
+          job_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          ai_score?: number | null
+          ai_summary?: string | null
+          applied_at?: string
+          candidate_id: string
+          current_stage?: string
+          id?: string
+          job_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          ai_score?: number | null
+          ai_summary?: string | null
+          applied_at?: string
+          candidate_id?: string
+          current_stage?: string
+          id?: string
+          job_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      candidates: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          linkedin_url: string | null
+          phone: string | null
+          resume_url: string | null
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          linkedin_url?: string | null
+          phone?: string | null
+          resume_url?: string | null
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          linkedin_url?: string | null
+          phone?: string | null
+          resume_url?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
+      evaluation_notes: {
+        Row: {
+          application_id: string
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          rating: number | null
+          stage: string
+        }
+        Insert: {
+          application_id: string
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          rating?: number | null
+          stage: string
+        }
+        Update: {
+          application_id?: string
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          rating?: number | null
+          stage?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evaluation_notes_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          department: string
+          description: string
+          employment_type: string
+          id: string
+          location: string
+          nice_to_haves: string | null
+          pipeline_stages: Json
+          requirements: string
+          salary_max: number | null
+          salary_min: number | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          department: string
+          description: string
+          employment_type: string
+          id?: string
+          location: string
+          nice_to_haves?: string | null
+          pipeline_stages?: Json
+          requirements: string
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          department?: string
+          description?: string
+          employment_type?: string
+          id?: string
+          location?: string
+          nice_to_haves?: string | null
+          pipeline_stages?: Json
+          requirements?: string
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name: string
+          id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      stage_history: {
+        Row: {
+          application_id: string
+          from_stage: string | null
+          id: string
+          moved_at: string
+          moved_by: string | null
+          notes: string | null
+          to_stage: string
+        }
+        Insert: {
+          application_id: string
+          from_stage?: string | null
+          id?: string
+          moved_at?: string
+          moved_by?: string | null
+          notes?: string | null
+          to_stage: string
+        }
+        Update: {
+          application_id?: string
+          from_stage?: string | null
+          id?: string
+          moved_at?: string
+          moved_by?: string | null
+          notes?: string | null
+          to_stage?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stage_history_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
