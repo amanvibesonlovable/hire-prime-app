@@ -216,6 +216,9 @@ function ResumeBlock({ url }: { url: string | null }) {
     );
   }
 
+  const PdfDocument = pdfComponents?.Document;
+  const PdfPage = pdfComponents?.Page;
+
   return (
     <div className="bg-surface border border-border rounded-lg p-5">
       <div className="flex items-center justify-between mb-4">
@@ -230,8 +233,8 @@ function ResumeBlock({ url }: { url: string | null }) {
         <Button variant="ghost" size="sm" onClick={() => setScale((s) => Math.min(2, s + 0.1))}><ZoomIn className="h-4 w-4" /></Button>
       </div>
       <div className="bg-background border border-border rounded-md h-[500px] overflow-auto p-4 flex flex-col items-center gap-4">
-        {pdfComponents ? (
-          <pdfComponents.Document
+        {PdfDocument && PdfPage ? (
+          <PdfDocument
             file={file}
             onLoadSuccess={({ numPages }: { numPages: number }) => setPages(numPages)}
             loading={<div className="text-muted-foreground text-sm py-12">Loading PDF...</div>}
@@ -239,11 +242,11 @@ function ResumeBlock({ url }: { url: string | null }) {
           >
             {Array.from({ length: pages }).map((_, i) => (
               <div key={i} className="border border-border bg-white">
-                <pdfComponents.Page pageNumber={i + 1} scale={scale} renderTextLayer={false} renderAnnotationLayer={false} />
+                <PdfPage pageNumber={i + 1} scale={scale} renderTextLayer={false} renderAnnotationLayer={false} />
                 <div className="bg-background text-center text-[11px] text-muted-foreground py-1">Page {i + 1} of {pages}</div>
               </div>
             ))}
-          </pdfComponents.Document>
+          </PdfDocument>
         ) : (
           <div className="text-muted-foreground text-sm py-12">Loading PDF...</div>
         )}
