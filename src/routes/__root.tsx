@@ -30,11 +30,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      {
-        rel: "icon",
-        type: "image/svg+xml",
-        href: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='30' fill='%230A0A0B'/><text x='50%25' y='54%25' text-anchor='middle' font-family='JetBrains Mono,monospace' font-weight='600' font-size='34' fill='white' dominant-baseline='middle'>M</text></svg>",
-      },
+      { rel: "icon", type: "image/png", href: "/meridian-logo.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       {
