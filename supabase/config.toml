@@ -1,1 +1,4 @@
 project_id = "umqviuvtfeoyexovxisc"
+
+[functions.score-resume]
+verify_jwt = false
