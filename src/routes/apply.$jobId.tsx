@@ -36,11 +36,22 @@ function ApplyPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); };
+  const handleDragEnter = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
+  const handleDragLeave = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    onFile(e.dataTransfer.files?.[0]);
+  };
 
   const onFile = (f: File | undefined) => {
     if (!f) return;
-    if (f.type !== "application/pdf") { toast.error("Resume must be a PDF"); return; }
-    if (f.size > 10 * 1024 * 1024) { toast.error("Resume must be under 10MB"); return; }
+    if (f.type !== "application/pdf") { toast.error("Only PDF files are accepted"); return; }
+    if (f.size > 10 * 1024 * 1024) { toast.error("File must be under 10MB"); return; }
     setFile(f);
   };
 
