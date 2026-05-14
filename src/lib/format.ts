@@ -1,7 +1,14 @@
 import { formatDistanceToNow } from "date-fns";
 
-export function relTime(date: string | Date) {
-  return formatDistanceToNow(new Date(date), { addSuffix: true });
+export function relTime(date: string | Date | null | undefined) {
+  if (!date) return "—";
+  try {
+    const d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return "—";
+    return formatDistanceToNow(d, { addSuffix: true });
+  } catch {
+    return "—";
+  }
 }
 
 export function greeting() {
