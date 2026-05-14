@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { greeting, relTime } from "@/lib/format";
 import { StatusBadge, DepartmentBadge, StageBadge } from "@/components/StatusBadge";
 import { EmptyState } from "@/components/EmptyState";
+import { AIScoreInline } from "@/components/AIScoreBadge";
 
 export const Route = createFileRoute("/_app/dashboard")({
   component: Dashboard,
@@ -41,7 +42,7 @@ function Dashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("id, current_stage, status, applied_at, job:jobs(title, department), candidate:candidates(first_name, last_name)")
+        .select("id, current_stage, status, applied_at, ai_score, job:jobs(title, department), candidate:candidates(first_name, last_name)")
         .order("applied_at", { ascending: false })
         .limit(10);
       return data || [];
@@ -89,6 +90,7 @@ function Dashboard() {
                   <th className="font-medium px-5 py-3">Job</th>
                   <th className="font-medium px-5 py-3">Department</th>
                   <th className="font-medium px-5 py-3">Stage</th>
+                  <th className="font-medium px-5 py-3">AI Score</th>
                   <th className="font-medium px-5 py-3">Applied</th>
                   <th className="font-medium px-5 py-3">Status</th>
                 </tr>
@@ -102,6 +104,7 @@ function Dashboard() {
                     <td className="px-5 py-3 text-foreground">{row.job?.title}</td>
                     <td className="px-5 py-3"><DepartmentBadge>{row.job?.department}</DepartmentBadge></td>
                     <td className="px-5 py-3"><StageBadge stage={row.current_stage} /></td>
+                    <td className="px-5 py-3">{row.ai_score != null ? <AIScoreInline score={row.ai_score} /> : <span className="text-muted-foreground">—</span>}</td>
                     <td className="px-5 py-3 text-muted-foreground">{relTime(row.applied_at)}</td>
                     <td className="px-5 py-3"><StatusBadge status={row.status} /></td>
                   </tr>
