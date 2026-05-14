@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
 import { DepartmentBadge } from "@/components/StatusBadge";
+import { AIScoreInline } from "@/components/AIScoreBadge";
 import { relTime } from "@/lib/format";
 
 export const Route = createFileRoute("/_app/candidates")({
@@ -85,6 +86,7 @@ function CandidatesPage() {
                 <th className="font-medium px-5 py-3">Phone</th>
                 <th className="font-medium px-5 py-3">Source</th>
                 <SortHeader label="Apps" active={sortKey === "applications"} dir={sortDir} onClick={() => setSort("applications")} />
+                <th className="font-medium px-5 py-3">Avg. AI Score</th>
                 <SortHeader label="Last Applied" active={sortKey === "applied"} dir={sortDir} onClick={() => setSort("applied")} />
                 <th className="font-medium px-5 py-3">Resume</th>
               </tr>
@@ -101,6 +103,7 @@ function CandidatesPage() {
                   <td className="px-5 py-3 text-muted-foreground">{c.phone || "—"}</td>
                   <td className="px-5 py-3"><DepartmentBadge>{c.source || "Direct"}</DepartmentBadge></td>
                   <td className="px-5 py-3 font-mono text-foreground">{c.app_count}</td>
+                  <td className="px-5 py-3">{c.avg_score != null ? <AIScoreInline score={Number(c.avg_score.toFixed(1))} /> : <span className="text-muted-foreground">—</span>}</td>
                   <td className="px-5 py-3 text-muted-foreground">{c.last_applied ? relTime(c.last_applied) : "—"}</td>
                   <td className="px-5 py-3">
                     {c.resume_url ? (
