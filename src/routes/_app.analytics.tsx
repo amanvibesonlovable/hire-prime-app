@@ -450,7 +450,8 @@ async function loadAnalytics(range: Range, dept: string): Promise<AnalyticsData>
   // Recruiter activity
   const { data: profiles } = await supabase.from("profiles").select("id, full_name");
   const profMap = new Map<string, string>((profiles || []).map((p) => [p.id, p.full_name || "Unknown"]));
-  const rec = new Map<string, { id: string; name: string; moved: number; notes: number; ratings: number[]; lastActive: string | null }>();
+  type RecRow = { id: string; name: string; moved: number; notes: number; ratings: number[]; lastActive: string | null };
+  const rec = new Map<string, RecRow>();
   (history || []).forEach((h) => {
     if (!h.moved_by || !inCurrent(h.moved_at)) return;
     const r = rec.get(h.moved_by) || { id: h.moved_by, name: profMap.get(h.moved_by) || "Unknown", moved: 0, notes: 0, ratings: [], lastActive: null };
