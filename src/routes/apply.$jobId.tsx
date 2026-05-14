@@ -168,7 +168,7 @@ function ApplyPage() {
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`block border border-dashed rounded-md p-6 text-center cursor-pointer transition-colors ${errors.file ? "border-danger" : ""}`}
+                className={`block border border-dashed rounded-md p-6 text-center cursor-pointer transition-colors hover:bg-surface ${errors.file ? "border-danger" : "border-border"}`}
                 style={isDragging ? { borderColor: "#3B82F6", backgroundColor: "#3B82F610" } : undefined}
               >
                 <input type="file" accept="application/pdf" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
