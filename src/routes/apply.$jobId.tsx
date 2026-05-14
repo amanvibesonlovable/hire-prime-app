@@ -163,7 +163,14 @@ function ApplyPage() {
                 <button type="button" onClick={() => setFile(null)} className="text-muted-foreground hover:text-danger"><X className="h-4 w-4" /></button>
               </div>
             ) : (
-              <label className={`block border border-dashed rounded-md p-6 text-center cursor-pointer hover:bg-surface transition-colors ${errors.file ? "border-danger" : "border-border"}`}>
+              <label
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`block border border-dashed rounded-md p-6 text-center cursor-pointer transition-colors ${errors.file ? "border-danger" : ""}`}
+                style={isDragging ? { borderColor: "#3B82F6", backgroundColor: "#3B82F610" } : undefined}
+              >
                 <input type="file" accept="application/pdf" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
                 <Upload className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
                 <div className="text-[13px] text-muted-foreground">Drag & drop your resume (PDF) or click to browse</div>
