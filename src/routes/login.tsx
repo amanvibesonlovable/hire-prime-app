@@ -113,22 +113,22 @@ function LoginPage() {
           preserveAspectRatio="xMidYMid slice"
           aria-hidden
         >
-          {/* Main arc */}
+          {/* Main sweeping S-curve arc */}
           <path
-            d="M -50 750 Q 200 400, 650 100"
+            d="M -80 780 C 100 600, 250 350, 680 80"
             fill="none"
             stroke="#3B82F6"
-            strokeOpacity="0.3"
+            strokeOpacity="0.32"
             strokeWidth="1"
             style={{
-              strokeDasharray: 1400,
-              strokeDashoffset: mounted ? 0 : 1400,
+              strokeDasharray: 1500,
+              strokeDashoffset: mounted ? 0 : 1500,
               transition: "stroke-dashoffset 2s ease-out",
             }}
           />
-          {/* Dotted parallel arc */}
+          {/* Dotted parallel arc — slightly offset */}
           <path
-            d="M -20 800 Q 250 450, 700 150"
+            d="M -40 820 C 160 660, 320 410, 720 140"
             fill="none"
             stroke="#3B82F6"
             strokeOpacity="0.15"
@@ -139,19 +139,32 @@ function LoginPage() {
               transition: "opacity 2s ease-out 0.3s",
             }}
           />
+          {/* Third faint arc — deepest layer */}
+          <path
+            d="M 20 860 C 220 720, 400 470, 760 200"
+            fill="none"
+            stroke="#3B82F6"
+            strokeOpacity="0.08"
+            strokeWidth="1"
+            strokeDasharray="1 8"
+            style={{
+              opacity: mounted ? 1 : 0,
+              transition: "opacity 2s ease-out 0.5s",
+            }}
+          />
         </svg>
 
-        {/* Glowing dots */}
+        {/* Glowing dots — positioned along main arc */}
         <div
           aria-hidden
           className="absolute rounded-full"
           style={{
-            left: "15%",
-            top: "65%",
-            width: 6,
-            height: 6,
+            left: "10%",
+            top: "72%",
+            width: 5,
+            height: 5,
             background: "#3B82F6",
-            boxShadow: "0 0 12px #3B82F6, 0 0 24px rgba(59,130,246,0.25)",
+            boxShadow: "0 0 10px #3B82F6, 0 0 20px rgba(59,130,246,0.25)",
             opacity: mounted ? 1 : 0,
             transition: "opacity 500ms ease-out 1s",
           }}
@@ -160,27 +173,28 @@ function LoginPage() {
           aria-hidden
           className="absolute rounded-full"
           style={{
-            left: "42%",
-            top: "38%",
-            width: 7,
-            height: 7,
+            left: "32%",
+            top: "48%",
+            width: 5,
+            height: 5,
             background: "#3B82F6",
-            boxShadow: "0 0 12px #3B82F6, 0 0 24px rgba(59,130,246,0.25)",
+            boxShadow: "0 0 10px #3B82F6, 0 0 20px rgba(59,130,246,0.25)",
             opacity: mounted ? 1 : 0,
             transition: "opacity 500ms ease-out 1.2s",
           }}
         />
-        {/* Brightest dot — sun at meridian peak */}
+        {/* Brightest dot — sun at meridian peak (on arc, upper area) */}
         <div
           aria-hidden
           className="absolute rounded-full"
           style={{
-            right: "15%",
-            top: "20%",
+            right: "12%",
+            top: "16%",
             width: 10,
             height: 10,
             background: "#FFFFFF",
-            boxShadow: "0 0 16px #3B82F6, 0 0 32px rgba(59,130,246,0.5), 0 0 48px rgba(59,130,246,0.3)",
+            boxShadow:
+              "0 0 16px #3B82F6, 0 0 40px rgba(59,130,246,0.5), 0 0 80px rgba(59,130,246,0.2)",
             opacity: mounted ? 1 : 0,
             transition: "opacity 500ms ease-out 1.4s",
           }}
@@ -188,7 +202,7 @@ function LoginPage() {
 
         {/* Bottom-left text */}
         <div className="relative z-10 mt-auto" style={{ padding: 48 }}>
-          <h2 className="text-white" style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.3 }}>
+          <h2 className="text-white" style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.3, textShadow: "0 0 40px rgba(59,130,246,0.15)" }}>
             AI-powered hiring.<br />Built for precision.
           </h2>
           <p className="mt-4 max-w-md" style={{ fontSize: 15, lineHeight: 1.6, color: "#9CA3AF" }}>
@@ -198,7 +212,7 @@ function LoginPage() {
       </div>
 
       {/* RIGHT PANEL — login card */}
-      <div className="flex-1 md:w-1/2 flex items-center justify-center px-4 py-16 relative">
+      <div className="flex-1 md:w-1/2 min-h-screen flex items-center justify-center px-4 py-20 md:py-16 relative">
         {/* Mobile-only subtle radial glow */}
         <div
           aria-hidden
@@ -213,9 +227,10 @@ function LoginPage() {
             background: "rgba(20, 20, 22, 0.8)",
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
-            border: "1px solid #1E1E22",
+            border: "1px solid rgba(255, 255, 255, 0.06)",
             borderRadius: 16,
-            boxShadow: "0 0 80px -20px rgba(59,130,246,0.1), 0 0 0 1px rgba(255,255,255,0.03)",
+            boxShadow:
+              "inset 0 0 0 1px rgba(255,255,255,0.03), 0 0 80px -20px rgba(59,130,246,0.12)",
             padding: "clamp(32px, 5vw, 48px)",
             opacity: mounted ? 1 : 0,
             transform: mounted ? "translateY(0)" : "translateY(20px)",
@@ -323,7 +338,7 @@ function LoginPage() {
                 height: 48,
                 fontSize: 15,
                 background: "linear-gradient(90deg, #3B82F6 0%, #8B5CF6 100%)",
-                boxShadow: "0 8px 24px -8px rgba(59,130,246,0.5)",
+                boxShadow: "0 8px 32px -8px rgba(99, 102, 241, 0.6)",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.filter = "brightness(1.1)")}
               onMouseLeave={(e) => (e.currentTarget.style.filter = "brightness(1)")}
