@@ -38,74 +38,26 @@ export async function scoreApplication(params: {
   jobNiceToHaves: string | null;
   resumePdfBase64: string;
 }): Promise<AIScoreResult> {
-  const userPrompt = `Evaluate the attached resume PDF against the job requirements.
-
-JOB TITLE: ${params.jobTitle}
-
-JOB DESCRIPTION:
-${params.jobDescription}
-
-REQUIREMENTS:
-${params.jobRequirements}
-
-NICE TO HAVES:
-${params.jobNiceToHaves || "None specified"}
-
-Respond with a JSON object in this exact format:
-{
-  "score": <integer 1-10>,
-  "summary": "<2-3 sentence explanation of the overall assessment>",
-  "strengths": ["<strength 1>", "<strength 2>", "<strength 3>"],
-  "concerns": ["<concern 1>", "<concern 2>"],
-  "recommendation": "<one of: Strong Yes, Yes, Maybe, No>"
-}
-
-Scoring guide:
-9-10: Exceptional match, exceeds all requirements
-7-8: Strong match, meets most or all requirements
-5-6: Moderate match, meets some requirements but has gaps
-3-4: Weak match, significant gaps in requirements
-1-2: Poor match, does not meet core requirements
-
-Be objective and specific. Reference actual skills and experience from the resume when explaining strengths and concerns.`;
-
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": params.apiKey,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
+  const { data, error } = await supabase.functions.invoke("score-resume", {
+    body: {
+      resume_pdf_base64: params.resumePdfBase64,
+      job_title: params.jobTitle,
+      job_description: params.jobDescription,
+      job_requirements: params.jobRequirements,
+      job_nice_to_haves: params.jobNiceToHaves,
+      api_key: params.apiKey,
     },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1024,
-      system:
-        "You are Meridian AI, an expert recruitment analyst. You evaluate resumes against job requirements with precision, objectivity, and fairness. You NEVER discriminate based on name, gender, ethnicity, age, or any protected characteristic. You focus purely on skills, experience, qualifications, and role fit.\n\nYou must respond ONLY with valid JSON, no additional text, no markdown formatting, no code fences. Just the raw JSON object.",
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "document",
-              source: {
-                type: "base64",
-                media_type: "application/pdf",
-                data: params.resumePdfBase64,
-              },
-            },
-            { type: "text", text: userPrompt },
-          ],
-        },
-      ],
-    }),
   });
 
-  if (res.status === 401) throw new Error("INVALID_KEY");
-  if (!res.ok) throw new Error(`Anthropic API error: ${res.status}`);
+  if (error || (data && data.error)) {
+    const code = (data && data.error) || "scoring_failed";
+    if (code === "invalid_api_key") throw new Error("INVALID_KEY");
+    if (code === "rate_limited") throw new Error("RATE_LIMITED");
+    if (code === "model_not_found") throw new Error("MODEL_NOT_FOUND");
+    throw new Error(code);
+  }
 
-  const json = await res.json();
-  const text: string = json?.content?.[0]?.text ?? "";
+  const text: string = data?.content?.[0]?.text ?? "";
   let parsed: AIScoreResult;
   try {
     const cleaned = text.trim().replace(/^```json\s*/i, "").replace(/```$/, "").trim();
