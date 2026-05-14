@@ -91,20 +91,20 @@ function JobDetail() {
         </TabsList>
 
         <TabsContent value="pipeline">
-          <KanbanBoard jobId={jobId} stages={j.pipeline_stages || []} />
+          <KanbanBoard jobId={jobId} stages={(j.pipeline_stages as string[]) || []} />
         </TabsContent>
 
         <TabsContent value="details" className="space-y-6">
           <Section title="Description"><div className="whitespace-pre-wrap text-[14px] text-foreground/90">{j.description}</div></Section>
           <Section title="Requirements"><div className="whitespace-pre-wrap text-[14px] text-foreground/90">{j.requirements}</div></Section>
           {j.nice_to_haves && <Section title="Nice to Haves"><div className="whitespace-pre-wrap text-[14px] text-foreground/90">{j.nice_to_haves}</div></Section>}
-          <Section title="Compensation"><div className="text-[14px] font-mono">{formatSalary(j.salary_min, j.salary_max, j.currency)}</div></Section>
+          <Section title="Compensation"><div className="text-[14px] font-mono">{formatSalary(j.salary_min, j.salary_max, j.currency ?? undefined)}</div></Section>
           <Section title="Pipeline Stages">
             <div className="flex items-center gap-2 flex-wrap">
-              {(j.pipeline_stages || []).map((s: string, i: number) => (
+              {(((j.pipeline_stages as string[]) || []) as string[]).map((s, i, arr) => (
                 <div key={s} className="flex items-center gap-2">
                   <span className="bg-surface border border-border rounded-md px-3 py-1.5 text-[13px]">{s}</span>
-                  {i < j.pipeline_stages.length - 1 && <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                  {i < arr.length - 1 && <ChevronRight className="h-4 w-4 text-muted-foreground" />}
                 </div>
               ))}
             </div>
