@@ -38,7 +38,7 @@ export async function scoreApplication(params: {
   jobNiceToHaves: string | null;
   resumePdfBase64: string;
 }): Promise<AIScoreResult> {
-  const { data, error } = await supabase.functions.invoke("score-resume", {
+  const result = await supabase.functions.invoke("score-resume", {
     body: {
       resume_pdf_base64: params.resumePdfBase64,
       job_title: params.jobTitle,
@@ -48,16 +48,42 @@ export async function scoreApplication(params: {
       api_key: params.apiKey,
     },
   });
+  console.log("[score-resume] invoke result:", result);
+
+  let { data } = result;
+  const { error } = result;
+
+  // When the function returns non-2xx, supabase-js puts a FunctionsHttpError in `error`
+  // and the JSON body in error.context. Pull it out so we can see real details.
+  if (error) {
+    let bodyText = "";
+    try {
+      const ctx: Response | undefined = (error as any).context;
+      if (ctx && typeof ctx.text === "function") {
+        bodyText = await ctx.text();
+        try { data = JSON.parse(bodyText); } catch { /* not json */ }
+      }
+    } catch (e) {
+      console.error("[score-resume] failed to read error context", e);
+    }
+    console.error("[score-resume] error:", error, "body:", bodyText, "parsed:", data);
+  }
 
   if (error || (data && data.error)) {
     const code = (data && data.error) || "scoring_failed";
+    const details = (data && (data.details || data.message)) || (error as any)?.message || "";
     if (code === "invalid_api_key") throw new Error("INVALID_KEY");
     if (code === "rate_limited") throw new Error("RATE_LIMITED");
     if (code === "model_not_found") throw new Error("MODEL_NOT_FOUND");
-    throw new Error(code);
+    throw new Error(`${code}${details ? `: ${details}` : ""}`);
   }
 
+  console.log("[score-resume] data:", data);
   const text: string = data?.content?.[0]?.text ?? "";
+  if (!text) {
+    console.error("[score-resume] unexpected response shape:", data);
+    throw new Error(`unexpected_response: ${JSON.stringify(data).slice(0, 300)}`);
+  }
   let parsed: AIScoreResult;
   try {
     const cleaned = text.trim().replace(/^```json\s*/i, "").replace(/```$/, "").trim();
