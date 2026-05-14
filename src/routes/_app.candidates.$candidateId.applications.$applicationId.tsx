@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { getApiKey, runScoringForApplication, aiErrorToToast } from "@/lib/aiScoring";
 
 export const Route = createFileRoute("/_app/candidates/$candidateId/applications/$applicationId")({
+  ssr: false,
   component: ApplicationDetail,
 });
 
