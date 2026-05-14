@@ -7,12 +7,14 @@ import { greeting, relTime } from "@/lib/format";
 import { StatusBadge, DepartmentBadge, StageBadge } from "@/components/StatusBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { AIScoreInline } from "@/components/AIScoreBadge";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/_app/dashboard")({
   component: Dashboard,
 });
 
 function Dashboard() {
+  useDocumentTitle("Dashboard — Meridian");
   const { profile } = useAuth();
   const firstName = (profile?.full_name || "").split(" ")[0] || "there";
 
