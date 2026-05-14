@@ -36,11 +36,22 @@ function ApplyPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); };
+  const handleDragEnter = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
+  const handleDragLeave = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    onFile(e.dataTransfer.files?.[0]);
+  };
 
   const onFile = (f: File | undefined) => {
     if (!f) return;
-    if (f.type !== "application/pdf") { toast.error("Resume must be a PDF"); return; }
-    if (f.size > 10 * 1024 * 1024) { toast.error("Resume must be under 10MB"); return; }
+    if (f.type !== "application/pdf") { toast.error("Only PDF files are accepted"); return; }
+    if (f.size > 10 * 1024 * 1024) { toast.error("File must be under 10MB"); return; }
     setFile(f);
   };
 
@@ -152,7 +163,14 @@ function ApplyPage() {
                 <button type="button" onClick={() => setFile(null)} className="text-muted-foreground hover:text-danger"><X className="h-4 w-4" /></button>
               </div>
             ) : (
-              <label className={`block border border-dashed rounded-md p-6 text-center cursor-pointer hover:bg-surface transition-colors ${errors.file ? "border-danger" : "border-border"}`}>
+              <label
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`block border border-dashed rounded-md p-6 text-center cursor-pointer transition-colors hover:bg-surface ${errors.file ? "border-danger" : "border-border"}`}
+                style={isDragging ? { borderColor: "#3B82F6", backgroundColor: "#3B82F610" } : undefined}
+              >
                 <input type="file" accept="application/pdf" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
                 <Upload className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
                 <div className="text-[13px] text-muted-foreground">Drag & drop your resume (PDF) or click to browse</div>
