@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { EmptyState } from "@/components/EmptyState";
 import { relTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/_app/analytics")({
   head: () => ({ meta: [{ title: "Analytics — Meridian" }] }),
@@ -50,6 +51,7 @@ const tooltipStyle = {
 };
 
 function AnalyticsPage() {
+  useDocumentTitle("Analytics — Meridian");
   const [range, setRange] = useState<Range>("30");
   const [dept, setDept] = useState<string>("all");
 
