@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AIScoreCircle, recommendationColor } from "@/components/AIScoreBadge";
 import { getApiKey, runScoringForApplication, aiErrorToToast } from "@/lib/aiScoring";
+import { createNotificationForAll } from "@/lib/notifications";
 
 type App = {
   id: string;
@@ -110,6 +111,16 @@ export function KanbanBoard({ jobId, stages }: { jobId: string; stages: string[]
       });
       toast.success(`${moved.candidate.first_name} ${moved.candidate.last_name} moved to ${toStage}`);
       qc.invalidateQueries({ queryKey: ["job-apps", jobId] });
+      if (toStage === "Offer" || toStage === "Hired") {
+        const { data: jobRow } = await supabase.from("jobs").select("title").eq("id", jobId).maybeSingle();
+        const candName = `${moved.candidate.first_name} ${moved.candidate.last_name}`;
+        const link = `/candidates/${moved.candidate_id}/applications/${appId}`;
+        if (toStage === "Offer") {
+          createNotificationForAll("candidate_offer", "Candidate Reached Offer", `${candName} has been moved to Offer for ${jobRow?.title ?? "a position"}`, link);
+        } else {
+          createNotificationForAll("candidate_hired", "New Hire!", `${candName} has been hired for ${jobRow?.title ?? "a position"} 🎉`, link);
+        }
+      }
     } catch (e: any) {
       toast.error("Failed to move candidate");
       setLocal((prev) => prev.map((a) => (a.id === appId ? { ...a, current_stage: fromStage } : a)));
@@ -129,6 +140,16 @@ export function KanbanBoard({ jobId, stages }: { jobId: string; stages: string[]
     try {
       const result = await runScoringForApplication(appId, apiKey);
       toast.success(`AI scoring complete — ${result.score}/10`);
+      const moved = local.find((a) => a.id === appId);
+      if (moved) {
+        const { data: jobRow } = await supabase.from("jobs").select("title").eq("id", jobId).maybeSingle();
+        createNotificationForAll(
+          "ai_score_complete",
+          "AI Score Complete",
+          `${moved.candidate.first_name} ${moved.candidate.last_name} scored ${result.score}/10 for ${jobRow?.title ?? "a position"}`,
+          `/candidates/${moved.candidate_id}/applications/${appId}`,
+        );
+      }
       qc.invalidateQueries({ queryKey: ["job-apps", jobId] });
     } catch (e) {
       toast.error(aiErrorToToast(e));
