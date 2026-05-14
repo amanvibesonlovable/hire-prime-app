@@ -16,7 +16,11 @@ export type Database = {
     Tables: {
       applications: {
         Row: {
+          ai_concerns: Json | null
+          ai_recommendation: string | null
           ai_score: number | null
+          ai_scored_at: string | null
+          ai_strengths: Json | null
           ai_summary: string | null
           applied_at: string
           candidate_id: string
@@ -27,7 +31,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ai_concerns?: Json | null
+          ai_recommendation?: string | null
           ai_score?: number | null
+          ai_scored_at?: string | null
+          ai_strengths?: Json | null
           ai_summary?: string | null
           applied_at?: string
           candidate_id: string
@@ -38,7 +46,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ai_concerns?: Json | null
+          ai_recommendation?: string | null
           ai_score?: number | null
+          ai_scored_at?: string | null
+          ai_strengths?: Json | null
           ai_summary?: string | null
           applied_at?: string
           candidate_id?: string
@@ -214,6 +226,27 @@ export type Database = {
           created_at?: string
           full_name?: string
           id?: string
+        }
+        Relationships: []
+      }
+      settings: {
+        Row: {
+          anthropic_api_key: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          anthropic_api_key: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          anthropic_api_key?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
