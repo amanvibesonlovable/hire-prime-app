@@ -161,10 +161,11 @@ function Dashboard() {
           stageDur[arr[i].stage].push(dur);
         }
       });
-      let bottleneck: { stage: string; avg: number } | null = null;
+      let bottleneck = null as null | { stage: string; avg: number };
       Object.entries(stageDur).forEach(([stage, arr]) => {
         const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
-        if (!bottleneck || avg > bottleneck.avg) bottleneck = { stage, avg };
+        const cur: { stage: string; avg: number } | null = bottleneck;
+        if (!cur || avg > cur.avg) bottleneck = { stage, avg };
       });
       return { days, bottleneck };
     },
