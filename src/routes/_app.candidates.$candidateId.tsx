@@ -8,15 +8,21 @@ import { AIScoreInline } from "@/components/AIScoreBadge";
 import { relTime } from "@/lib/format";
 
 export const Route = createFileRoute("/_app/candidates/$candidateId")({
-  component: CandidateIndex,
+  component: CandidateRoute,
 });
 
-function CandidateIndex() {
+function CandidateRoute() {
   const { candidateId } = Route.useParams();
-  const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   if (pathname.replace(/\/$/, "") !== `/candidates/${candidateId}`) return <Outlet />;
+
+  return <CandidatePage />;
+}
+
+function CandidatePage() {
+  const { candidateId } = Route.useParams();
+  const navigate = useNavigate();
 
   const cand = useQuery({
     queryKey: ["candidate", candidateId],
