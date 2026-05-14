@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { ArrowLeft, Mail, Phone, Linkedin } from "lucide-react";
@@ -14,6 +14,9 @@ export const Route = createFileRoute("/_app/candidates/$candidateId")({
 function CandidateIndex() {
   const { candidateId } = Route.useParams();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  if (pathname.replace(/\/$/, "") !== `/candidates/${candidateId}`) return <Outlet />;
 
   const cand = useQuery({
     queryKey: ["candidate", candidateId],
