@@ -202,7 +202,7 @@ function LoginPage() {
 
         {/* Bottom-left text */}
         <div className="relative z-10 mt-auto" style={{ padding: 48 }}>
-          <h2 className="text-white" style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.3 }}>
+          <h2 className="text-white" style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.3, textShadow: "0 0 40px rgba(59,130,246,0.15)" }}>
             AI-powered hiring.<br />Built for precision.
           </h2>
           <p className="mt-4 max-w-md" style={{ fontSize: 15, lineHeight: 1.6, color: "#9CA3AF" }}>
