@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ArrowLeft, Mail, Phone, Linkedin, Download, Sparkles, CheckCircle, AlertCircle,
   Star, UserPlus, FileX, Loader2,
