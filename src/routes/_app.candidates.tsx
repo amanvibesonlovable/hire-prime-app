@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { DepartmentBadge } from "@/components/StatusBadge";
 import { AIScoreInline } from "@/components/AIScoreBadge";
 import { relTime } from "@/lib/format";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/_app/candidates")({
   component: CandidatesPage,
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/_app/candidates")({
 const PAGE_SIZE = 20;
 
 function CandidatesPage() {
+  useDocumentTitle("Candidates — Meridian");
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);

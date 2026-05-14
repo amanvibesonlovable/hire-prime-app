@@ -11,6 +11,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/lib/auth";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
 export const Route = createFileRoute("/_app/settings")({
   component: SettingsPage,

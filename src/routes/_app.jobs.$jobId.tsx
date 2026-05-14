@@ -34,6 +34,8 @@ function JobDetail() {
     },
   });
 
+  useDocumentTitle(job.data?.title ? `${job.data.title} — Meridian` : "Meridian");
+
   const applyUrl = typeof window !== "undefined" ? `${window.location.origin}/apply/${jobId}` : `/apply/${jobId}`;
 
   useEffect(() => {
