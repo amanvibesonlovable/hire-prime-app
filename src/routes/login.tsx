@@ -227,9 +227,10 @@ function LoginPage() {
             background: "rgba(20, 20, 22, 0.8)",
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
-            border: "1px solid #1E1E22",
+            border: "1px solid rgba(255, 255, 255, 0.06)",
             borderRadius: 16,
-            boxShadow: "0 0 80px -20px rgba(59,130,246,0.1), 0 0 0 1px rgba(255,255,255,0.03)",
+            boxShadow:
+              "inset 0 0 0 1px rgba(255,255,255,0.03), 0 0 80px -20px rgba(59,130,246,0.12)",
             padding: "clamp(32px, 5vw, 48px)",
             opacity: mounted ? 1 : 0,
             transform: mounted ? "translateY(0)" : "translateY(20px)",
@@ -337,7 +338,7 @@ function LoginPage() {
                 height: 48,
                 fontSize: 15,
                 background: "linear-gradient(90deg, #3B82F6 0%, #8B5CF6 100%)",
-                boxShadow: "0 8px 24px -8px rgba(59,130,246,0.5)",
+                boxShadow: "0 8px 32px -8px rgba(99, 102, 241, 0.6)",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.filter = "brightness(1.1)")}
               onMouseLeave={(e) => (e.currentTarget.style.filter = "brightness(1)")}
