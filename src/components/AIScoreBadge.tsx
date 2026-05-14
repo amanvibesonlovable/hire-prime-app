@@ -29,7 +29,7 @@ export function AIScoreInline({ score }: { score: number }) {
   const c = scoreColor(score);
   return (
     <span className={cn("inline-flex items-center rounded-[4px] px-1.5 py-0.5 font-mono text-[12px] font-semibold border", c.bg, c.text, c.border)}>
-      {score.toFixed ? score : score}
+      {score}
     </span>
   );
 }
