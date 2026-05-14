@@ -1,13 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Mail, Lock, Eye, EyeOff, User, ArrowRight, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/lib/auth";
 import { useDocumentTitle } from "@/lib/useDocumentTitle";
+import logoUrl from "@/assets/meridian-logo.png";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -20,13 +19,20 @@ function LoginPage() {
   const { session, loading } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     if (!loading && session) navigate({ to: "/dashboard" });
   }, [loading, session, navigate]);
+
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(t);
+  }, []);
 
   const onGoogle = async () => {
     setBusy(true);
@@ -63,63 +69,343 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 relative overflow-hidden">
-      <div
-        className="pointer-events-none absolute inset-0 opacity-60"
-        style={{ background: "radial-gradient(circle at 50% 40%, rgba(59,130,246,0.08), transparent 60%)" }}
-      />
-      <div className="relative w-full max-w-[400px] bg-surface border border-border rounded-lg p-8">
-        <div className="text-center mb-6">
-          <div className="font-mono font-semibold text-[24px] tracking-[0.1em] text-foreground">MERIDIAN</div>
-          <div className="mt-2 mx-auto h-[2px] w-10 bg-primary rounded" />
-          <p className="mt-3 text-[14px] italic text-muted-foreground">Precision hiring. Peak talent.</p>
-        </div>
+    <div className="min-h-screen w-full flex relative overflow-hidden" style={{ background: "#0A0A0B" }}>
+      {/* Top-left logo */}
+      <div className="absolute top-6 left-8 z-20 flex items-center gap-2.5">
+        <img src={logoUrl} alt="Meridian" style={{ height: 28, width: "auto" }} />
+        <span className="font-mono font-semibold text-[14px] tracking-[0.15em] text-white">MERIDIAN</span>
+      </div>
 
-        <Button
-          variant="outline"
-          className="w-full h-9 gap-2"
-          onClick={onGoogle}
-          disabled={busy}
+      {/* LEFT PANEL */}
+      <div className="hidden md:flex relative w-1/2 overflow-hidden" style={{ background: "#0A0A0B" }}>
+        {/* Amber warm glow bottom-left */}
+        <div
+          aria-hidden
+          className="absolute pointer-events-none"
+          style={{
+            left: "-15%",
+            bottom: "-15%",
+            width: "60%",
+            height: "60%",
+            background: "radial-gradient(circle, rgba(245,158,11,0.05), transparent 70%)",
+            filter: "blur(40px)",
+          }}
+        />
+        {/* Blue radial glow behind brightest dot */}
+        <div
+          aria-hidden
+          className="absolute pointer-events-none"
+          style={{
+            right: "15%",
+            top: "20%",
+            width: "300px",
+            height: "300px",
+            transform: "translate(50%, -50%)",
+            background: "radial-gradient(circle, rgba(59,130,246,0.18), transparent 65%)",
+            filter: "blur(30px)",
+          }}
+        />
+
+        {/* Orbital arcs SVG */}
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 600 800"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden
         >
-          <GoogleIcon /> Continue with Google
-        </Button>
+          {/* Main arc */}
+          <path
+            d="M -50 750 Q 200 400, 650 100"
+            fill="none"
+            stroke="#3B82F6"
+            strokeOpacity="0.3"
+            strokeWidth="1"
+            style={{
+              strokeDasharray: 1400,
+              strokeDashoffset: mounted ? 0 : 1400,
+              transition: "stroke-dashoffset 2s ease-out",
+            }}
+          />
+          {/* Dotted parallel arc */}
+          <path
+            d="M -20 800 Q 250 450, 700 150"
+            fill="none"
+            stroke="#3B82F6"
+            strokeOpacity="0.15"
+            strokeWidth="1"
+            strokeDasharray="2 6"
+            style={{
+              opacity: mounted ? 1 : 0,
+              transition: "opacity 2s ease-out 0.3s",
+            }}
+          />
+        </svg>
 
-        <div className="my-5 flex items-center gap-3 text-[12px] text-muted-foreground">
-          <div className="h-px flex-1 bg-border" />
-          or
-          <div className="h-px flex-1 bg-border" />
+        {/* Glowing dots */}
+        <div
+          aria-hidden
+          className="absolute rounded-full"
+          style={{
+            left: "15%",
+            top: "65%",
+            width: 6,
+            height: 6,
+            background: "#3B82F6",
+            boxShadow: "0 0 12px #3B82F6, 0 0 24px rgba(59,130,246,0.25)",
+            opacity: mounted ? 1 : 0,
+            transition: "opacity 500ms ease-out 1s",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute rounded-full"
+          style={{
+            left: "42%",
+            top: "38%",
+            width: 7,
+            height: 7,
+            background: "#3B82F6",
+            boxShadow: "0 0 12px #3B82F6, 0 0 24px rgba(59,130,246,0.25)",
+            opacity: mounted ? 1 : 0,
+            transition: "opacity 500ms ease-out 1.2s",
+          }}
+        />
+        {/* Brightest dot — sun at meridian peak */}
+        <div
+          aria-hidden
+          className="absolute rounded-full"
+          style={{
+            right: "15%",
+            top: "20%",
+            width: 10,
+            height: 10,
+            background: "#FFFFFF",
+            boxShadow: "0 0 16px #3B82F6, 0 0 32px rgba(59,130,246,0.5), 0 0 48px rgba(59,130,246,0.3)",
+            opacity: mounted ? 1 : 0,
+            transition: "opacity 500ms ease-out 1.4s",
+          }}
+        />
+
+        {/* Bottom-left text */}
+        <div className="relative z-10 mt-auto" style={{ padding: 48 }}>
+          <h2 className="text-white" style={{ fontSize: 28, fontWeight: 600, lineHeight: 1.3 }}>
+            AI-powered hiring.<br />Built for precision.
+          </h2>
+          <p className="mt-4 max-w-md" style={{ fontSize: 15, lineHeight: 1.6, color: "#9CA3AF" }}>
+            Find, evaluate, and hire the best talent — faster and fairer.
+          </p>
         </div>
+      </div>
 
-        <form onSubmit={onSubmit} className="space-y-3">
-          {mode === "signup" && (
-            <div className="space-y-1.5">
-              <Label htmlFor="name">Full Name</Label>
-              <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+      {/* RIGHT PANEL — login card */}
+      <div className="flex-1 md:w-1/2 flex items-center justify-center px-4 py-16 relative">
+        {/* Mobile-only subtle radial glow */}
+        <div
+          aria-hidden
+          className="md:hidden pointer-events-none absolute inset-0"
+          style={{ background: "radial-gradient(circle at 50% 40%, rgba(59,130,246,0.08), transparent 60%)" }}
+        />
+
+        <div
+          className="relative w-full"
+          style={{
+            maxWidth: 440,
+            background: "rgba(20, 20, 22, 0.8)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid #1E1E22",
+            borderRadius: 16,
+            boxShadow: "0 0 80px -20px rgba(59,130,246,0.1), 0 0 0 1px rgba(255,255,255,0.03)",
+            padding: "clamp(32px, 5vw, 48px)",
+            opacity: mounted ? 1 : 0,
+            transform: mounted ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 500ms ease-out, transform 500ms ease-out",
+          }}
+        >
+          {/* Logo + brand */}
+          <div className="flex flex-col items-center text-center">
+            <img src={logoUrl} alt="Meridian" style={{ height: 48, width: "auto" }} />
+            <div
+              className="mt-3 rounded-full"
+              style={{
+                width: 4,
+                height: 4,
+                background: "#3B82F6",
+                boxShadow: "0 0 8px #3B82F6, 0 0 16px rgba(59,130,246,0.4)",
+              }}
+            />
+            <div
+              className="mt-4 font-mono text-white"
+              style={{ fontSize: 24, fontWeight: 600, letterSpacing: "0.15em" }}
+            >
+              MERIDIAN
             </div>
-          )}
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <p className="mt-2 italic" style={{ fontSize: 14, color: "#71717A" }}>
+              Precision hiring. Peak talent.
+            </p>
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-          </div>
-          <Button type="submit" className="w-full h-9" disabled={busy}>
-            {busy ? "Please wait..." : mode === "signup" ? "Create account" : "Sign in"}
-          </Button>
-        </form>
 
-        <p className="mt-5 text-center text-[13px] text-muted-foreground">
-          {mode === "signin" ? "Don't have an account? " : "Already have an account? "}
-          <button
-            type="button"
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-            className="text-primary hover:text-primary-hover font-medium"
-          >
-            {mode === "signin" ? "Sign up" : "Sign in"}
-          </button>
-        </p>
+          <div className="mt-6">
+            <button
+              type="button"
+              onClick={onGoogle}
+              disabled={busy}
+              className="w-full inline-flex items-center justify-center gap-2.5 rounded-lg text-white text-[14px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                height: 44,
+                background: "transparent",
+                border: "1px solid #1E1E22",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#1A1A1E")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            >
+              <GoogleIcon /> Continue with Google
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="my-6 flex items-center">
+            <div className="h-px flex-1" style={{ background: "#1E1E22" }} />
+            <span className="px-4" style={{ fontSize: 13, color: "#71717A" }}>or</span>
+            <div className="h-px flex-1" style={{ background: "#1E1E22" }} />
+          </div>
+
+          <form onSubmit={onSubmit} className="space-y-4">
+            {mode === "signup" && (
+              <FieldWithIcon
+                id="name"
+                label="Full Name"
+                icon={<User size={16} color="#4A4A4E" />}
+                value={fullName}
+                onChange={setFullName}
+                placeholder="Your full name"
+                required
+              />
+            )}
+            <FieldWithIcon
+              id="email"
+              label="Email"
+              type="email"
+              icon={<Mail size={16} color="#4A4A4E" />}
+              value={email}
+              onChange={setEmail}
+              placeholder="you@company.com"
+              required
+            />
+            <FieldWithIcon
+              id="password"
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              icon={<Lock size={16} color="#4A4A4E" />}
+              value={password}
+              onChange={setPassword}
+              placeholder="Enter your password"
+              required
+              minLength={6}
+              rightSlot={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                  tabIndex={-1}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={16} color="#4A4A4E" /> : <Eye size={16} color="#4A4A4E" />}
+                </button>
+              }
+            />
+
+            <button
+              type="submit"
+              disabled={busy}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-lg text-white font-medium transition-[filter] disabled:opacity-70 disabled:cursor-not-allowed"
+              style={{
+                height: 48,
+                fontSize: 15,
+                background: "linear-gradient(90deg, #3B82F6 0%, #8B5CF6 100%)",
+                boxShadow: "0 8px 24px -8px rgba(59,130,246,0.5)",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.filter = "brightness(1.1)")}
+              onMouseLeave={(e) => (e.currentTarget.style.filter = "brightness(1)")}
+            >
+              {busy ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                <>
+                  {mode === "signup" ? "Create account" : "Sign in"} <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          </form>
+
+          <p className="mt-5 text-center" style={{ fontSize: 14, color: "#71717A" }}>
+            {mode === "signin" ? "Don't have an account? " : "Already have an account? "}
+            <button
+              type="button"
+              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+              className="font-medium hover:underline"
+              style={{ color: "#3B82F6" }}
+            >
+              {mode === "signin" ? "Sign up" : "Sign in"}
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FieldWithIcon({
+  id,
+  label,
+  icon,
+  value,
+  onChange,
+  type = "text",
+  placeholder,
+  required,
+  minLength,
+  rightSlot,
+}: {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  placeholder?: string;
+  required?: boolean;
+  minLength?: number;
+  rightSlot?: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label htmlFor={id} className="block" style={{ fontSize: 13, color: "#9CA3AF" }}>
+        {label}
+      </label>
+      <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">{icon}</span>
+        <input
+          id={id}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          required={required}
+          minLength={minLength}
+          className="w-full rounded-lg text-white outline-none transition-colors"
+          style={{
+            height: 44,
+            background: "#0F0F12",
+            border: "1px solid #1E1E22",
+            paddingLeft: 38,
+            paddingRight: rightSlot ? 38 : 12,
+            fontSize: 14,
+          }}
+          onFocus={(e) => (e.currentTarget.style.borderColor = "#3B82F6")}
+          onBlur={(e) => (e.currentTarget.style.borderColor = "#1E1E22")}
+        />
+        {rightSlot}
       </div>
     </div>
   );
