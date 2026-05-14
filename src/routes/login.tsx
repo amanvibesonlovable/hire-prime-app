@@ -212,7 +212,7 @@ function LoginPage() {
       </div>
 
       {/* RIGHT PANEL — login card */}
-      <div className="flex-1 md:w-1/2 flex items-center justify-center px-4 py-16 relative">
+      <div className="flex-1 md:w-1/2 min-h-screen flex items-center justify-center px-4 py-20 md:py-16 relative">
         {/* Mobile-only subtle radial glow */}
         <div
           aria-hidden
