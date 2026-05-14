@@ -229,28 +229,46 @@ function AnalyticsPage() {
         ) : !k || k.recruiters.length === 0 ? (
           <div className="py-10"><EmptyState icon={Users} title="No recruiter activity in this period" description="Move candidates and add notes to see activity here." /></div>
         ) : (
-          <table className="w-full text-[13px]">
-            <thead>
-              <tr className="text-left text-muted-foreground">
-                <th className="font-medium px-5 py-3">Recruiter</th>
-                <th className="font-medium px-5 py-3">Candidates Moved</th>
-                <th className="font-medium px-5 py-3">Notes Added</th>
-                <th className="font-medium px-5 py-3">Avg. Rating</th>
-                <th className="font-medium px-5 py-3">Last Active</th>
-              </tr>
-            </thead>
-            <tbody>
+          <>
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-border">
               {k.recruiters.map((r) => (
-                <tr key={r.id} className="border-t border-border hover:bg-surface-hover transition-colors">
-                  <td className="px-5 py-3 text-foreground">{r.name}</td>
-                  <td className="px-5 py-3 font-mono">{r.moved}</td>
-                  <td className="px-5 py-3 font-mono">{r.notes}</td>
-                  <td className="px-5 py-3 font-mono">{r.avgRating != null ? r.avgRating.toFixed(1) : "—"}</td>
-                  <td className="px-5 py-3 text-muted-foreground">{r.lastActive ? relTime(r.lastActive) : "—"}</td>
-                </tr>
+                <div key={r.id} className="p-4 space-y-1">
+                  <div className="text-[14px] font-medium text-foreground">{r.name}</div>
+                  <div className="flex items-center gap-3 text-[12px] text-muted-foreground flex-wrap font-mono">
+                    <span>{r.moved} moves</span>
+                    <span>·</span>
+                    <span>{r.notes} notes</span>
+                    <span>·</span>
+                    <span>{r.avgRating != null ? `${r.avgRating.toFixed(1)}★` : "—"}</span>
+                  </div>
+                  <div className="text-[12px] text-muted-foreground">{r.lastActive ? relTime(r.lastActive) : "—"}</div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+            <table className="w-full text-[13px] hidden md:table">
+              <thead>
+                <tr className="text-left text-muted-foreground">
+                  <th className="font-medium px-5 py-3">Recruiter</th>
+                  <th className="font-medium px-5 py-3">Candidates Moved</th>
+                  <th className="font-medium px-5 py-3">Notes Added</th>
+                  <th className="font-medium px-5 py-3">Avg. Rating</th>
+                  <th className="font-medium px-5 py-3">Last Active</th>
+                </tr>
+              </thead>
+              <tbody>
+                {k.recruiters.map((r) => (
+                  <tr key={r.id} className="border-t border-border hover:bg-surface-hover transition-colors">
+                    <td className="px-5 py-3 text-foreground">{r.name}</td>
+                    <td className="px-5 py-3 font-mono">{r.moved}</td>
+                    <td className="px-5 py-3 font-mono">{r.notes}</td>
+                    <td className="px-5 py-3 font-mono">{r.avgRating != null ? r.avgRating.toFixed(1) : "—"}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{r.lastActive ? relTime(r.lastActive) : "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
         )}
       </section>
     </div>

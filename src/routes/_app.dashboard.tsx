@@ -85,34 +85,55 @@ function Dashboard() {
               description="Create a job and share the application link to start receiving applications."
             />
           ) : (
-            <table className="w-full text-[13px]">
-              <thead>
-                <tr className="text-left text-muted-foreground">
-                  <th className="font-medium px-5 py-3">Candidate</th>
-                  <th className="font-medium px-5 py-3">Job</th>
-                  <th className="font-medium px-5 py-3">Department</th>
-                  <th className="font-medium px-5 py-3">Stage</th>
-                  <th className="font-medium px-5 py-3">AI Score</th>
-                  <th className="font-medium px-5 py-3">Applied</th>
-                  <th className="font-medium px-5 py-3">Status</th>
-                </tr>
-              </thead>
-              <tbody>
+            <>
+              {/* Mobile cards */}
+              <div className="md:hidden divide-y divide-border">
                 {recent.data!.map((row: any) => (
-                  <tr key={row.id} className="border-t border-border hover:bg-surface-hover transition-colors">
-                    <td className="px-5 py-3 text-foreground">
-                      {row.candidate?.first_name} {row.candidate?.last_name}
-                    </td>
-                    <td className="px-5 py-3 text-foreground">{row.job?.title}</td>
-                    <td className="px-5 py-3"><DepartmentBadge>{row.job?.department}</DepartmentBadge></td>
-                    <td className="px-5 py-3"><StageBadge stage={row.current_stage} /></td>
-                    <td className="px-5 py-3">{row.ai_score != null ? <AIScoreInline score={row.ai_score} /> : <span className="text-muted-foreground">—</span>}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{relTime(row.applied_at)}</td>
-                    <td className="px-5 py-3"><StatusBadge status={row.status} /></td>
-                  </tr>
+                  <div key={row.id} className="p-4 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="text-[14px] font-medium text-foreground">{row.candidate?.first_name} {row.candidate?.last_name}</div>
+                      <StatusBadge status={row.status} />
+                    </div>
+                    <div className="text-[13px] text-foreground">{row.job?.title}</div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <DepartmentBadge>{row.job?.department}</DepartmentBadge>
+                      <StageBadge stage={row.current_stage} />
+                      {row.ai_score != null && <AIScoreInline score={row.ai_score} />}
+                    </div>
+                    <div className="text-[12px] text-muted-foreground">{relTime(row.applied_at)}</div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+              {/* Desktop table */}
+              <table className="w-full text-[13px] hidden md:table">
+                <thead>
+                  <tr className="text-left text-muted-foreground">
+                    <th className="font-medium px-5 py-3">Candidate</th>
+                    <th className="font-medium px-5 py-3">Job</th>
+                    <th className="font-medium px-5 py-3">Department</th>
+                    <th className="font-medium px-5 py-3">Stage</th>
+                    <th className="font-medium px-5 py-3">AI Score</th>
+                    <th className="font-medium px-5 py-3">Applied</th>
+                    <th className="font-medium px-5 py-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recent.data!.map((row: any) => (
+                    <tr key={row.id} className="border-t border-border hover:bg-surface-hover transition-colors">
+                      <td className="px-5 py-3 text-foreground">
+                        {row.candidate?.first_name} {row.candidate?.last_name}
+                      </td>
+                      <td className="px-5 py-3 text-foreground">{row.job?.title}</td>
+                      <td className="px-5 py-3"><DepartmentBadge>{row.job?.department}</DepartmentBadge></td>
+                      <td className="px-5 py-3"><StageBadge stage={row.current_stage} /></td>
+                      <td className="px-5 py-3">{row.ai_score != null ? <AIScoreInline score={row.ai_score} /> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="px-5 py-3 text-muted-foreground">{relTime(row.applied_at)}</td>
+                      <td className="px-5 py-3"><StatusBadge status={row.status} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
           )}
         </div>
       </section>
