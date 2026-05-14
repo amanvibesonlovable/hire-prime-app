@@ -15,6 +15,7 @@ import {
   Menu,
   X,
   Play,
+  ChevronDown,
 } from "lucide-react";
 import logoUrl from "@/assets/meridian-logo.png";
 
@@ -537,15 +538,39 @@ function Workflow() {
 
 function AnalyticsPreview() {
   const bars = [
-    { label: "Sourced", pct: 100, color: "#3B82F6" },
-    { label: "Screening", pct: 67, color: "#6366F1" },
-    { label: "Interview", pct: 32, color: "#8B5CF6" },
-    { label: "Offer", pct: 9, color: "#F59E0B" },
-    { label: "Hired", pct: 6, color: "#22C55E" },
+    { label: "Sourced", count: 1248, pct: 100, gradient: "linear-gradient(180deg, #3B82F6 0%, #2563EB 100%)" },
+    { label: "Screening", count: 842, pct: 67, gradient: "linear-gradient(180deg, #6366F1 0%, #4F46E5 100%)" },
+    { label: "Interview", count: 395, pct: 32, gradient: "linear-gradient(180deg, #8B5CF6 0%, #7C3AED 100%)" },
+    { label: "Offer", count: 112, pct: 9, gradient: "linear-gradient(180deg, #F59E0B 0%, #D97706 100%)" },
+    { label: "Hired", count: 78, pct: 6, gradient: "linear-gradient(180deg, #22C55E 0%, #16A34A 100%)" },
   ];
+
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [animate, setAnimate] = useState(false);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setAnimate(true);
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const yLabels = ["1,250", "1,000", "750", "500", "250", "0"];
+  const chartHeight = 240;
+
   return (
-    <section id="analytics" className="py-20 md:py-32" style={{ background: "#0F0F12" }}>
-      <div className="max-w-[1200px] mx-auto px-4 md:px-8 grid md:grid-cols-[2fr_3fr] gap-12 items-center">
+    <section ref={sectionRef} id="analytics" className="py-20 md:py-32" style={{ background: "#0F0F12" }}>
+      <div className="max-w-[1200px] mx-auto px-4 md:px-8 grid md:grid-cols-[1fr_2fr] gap-12 items-center">
         <div>
           <h2 data-reveal data-reveal-index="0" className="text-[28px] md:text-[32px] font-semibold tracking-tight">
             See bottlenecks before they become missed hires.
@@ -569,48 +594,119 @@ function AnalyticsPreview() {
             aria-hidden
             className="absolute inset-0 -z-10"
             style={{
-              background: "radial-gradient(circle at 50% 50%, rgba(59,130,246,0.18), rgba(139,92,246,0.10) 40%, transparent 70%)",
+              background: "radial-gradient(circle at 50% 50%, rgba(59,130,246,0.22), rgba(139,92,246,0.14) 40%, transparent 70%)",
               filter: "blur(48px)",
             }}
           />
           <div
-            className="rounded-xl border p-6"
-            style={{ background: "#141416", borderColor: "#1E1E22" }}
+            className="rounded-xl border"
+            style={{
+              background: "#141416",
+              borderColor: "#1E1E22",
+              padding: 32,
+              boxShadow: "0 0 60px -20px rgba(59,130,246,0.15) inset",
+            }}
           >
+            {/* Header */}
             <div className="flex items-center justify-between">
-              <div className="text-[14px] font-medium">Pipeline overview</div>
-              <div className="text-[12px]" style={{ color: "#71717A" }}>
-                This month ▾
+              <div className="text-[14px] font-medium text-white">Pipeline overview</div>
+              <div
+                className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[12px] text-white"
+                style={{ background: "#1E1E22", border: "1px solid #2A2A2E" }}
+              >
+                This month
+                <ChevronDown size={12} />
               </div>
             </div>
-            <div className="mt-6 flex gap-6">
-              <div className="flex flex-col justify-between text-[10px]" style={{ color: "#71717A", height: 200 }}>
-                <span>100%</span>
-                <span>75%</span>
-                <span>50%</span>
-                <span>25%</span>
-                <span>0%</span>
-              </div>
-              <div className="flex-1 grid grid-cols-5 gap-3 items-end" style={{ height: 200 }}>
-                {bars.map((b) => (
-                  <div key={b.label} className="flex flex-col items-center gap-2">
-                    <div
-                      className="w-full rounded-t-md transition-all"
-                      style={{
-                        height: `${b.pct}%`,
-                        background: `linear-gradient(180deg, ${b.color}, ${b.color}99)`,
-                        minHeight: 8,
-                      }}
-                    />
-                  </div>
+
+            {/* Secondary stat row */}
+            <div
+              className="mt-4 flex items-center justify-between"
+              style={{ padding: "12px 0", borderBottom: "1px solid #1E1E22" }}
+            >
+              {[
+                { label: "Total candidates", value: "1,248" },
+                { label: "Conversion rate", value: "6.2%" },
+                { label: "Avg. time to hire", value: "23 days" },
+              ].map((s, i) => (
+                <div
+                  key={s.label}
+                  className="flex-1 flex items-center justify-center gap-2 text-[12px]"
+                  style={{
+                    borderLeft: i === 0 ? "none" : "1px solid #1E1E22",
+                  }}
+                >
+                  <span style={{ color: "#71717A" }}>{s.label}:</span>
+                  <span className="text-white font-medium">{s.value}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Chart */}
+            <div className="mt-8 flex gap-4">
+              {/* Y-axis */}
+              <div
+                className="flex flex-col justify-between text-[11px] font-mono text-right"
+                style={{ color: "#71717A", height: chartHeight, minWidth: 40 }}
+              >
+                {yLabels.map((l) => (
+                  <span key={l}>{l}</span>
                 ))}
               </div>
+
+              {/* Chart area */}
+              <div className="flex-1 relative" style={{ height: chartHeight, borderLeft: "1px solid #1E1E22" }}>
+                {/* Grid lines */}
+                {[0, 25, 50, 75, 100].map((p) => (
+                  <div
+                    key={p}
+                    className="absolute left-0 right-0"
+                    style={{
+                      bottom: `${p}%`,
+                      borderTop: "1px dashed #1E1E22",
+                      height: 0,
+                    }}
+                  />
+                ))}
+
+                {/* Bars */}
+                <div className="absolute inset-0 grid grid-cols-5 gap-2 items-end px-2">
+                  {bars.map((b, i) => (
+                    <div key={b.label} className="relative flex flex-col items-center justify-end h-full">
+                      {/* Number above bar */}
+                      <div
+                        className="absolute text-[14px] font-medium text-white"
+                        style={{
+                          bottom: animate ? `calc(${b.pct}% + 8px)` : "8px",
+                          transition: `bottom 800ms cubic-bezier(0.22, 1, 0.36, 1) ${i * 100}ms`,
+                        }}
+                      >
+                        {b.count.toLocaleString()}
+                      </div>
+                      {/* Bar */}
+                      <div
+                        className="w-full"
+                        style={{
+                          height: animate ? `${b.pct}%` : "0%",
+                          background: b.gradient,
+                          borderRadius: "4px 4px 0 0",
+                          transition: `height 800ms cubic-bezier(0.22, 1, 0.36, 1) ${i * 100}ms`,
+                          boxShadow: "0 -8px 24px -8px rgba(59,130,246,0.25)",
+                          minHeight: animate ? 6 : 0,
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div className="mt-3 grid grid-cols-5 gap-3 pl-[52px]">
+
+            {/* Bar labels */}
+            <div className="mt-3 grid grid-cols-5 gap-2 px-2" style={{ paddingLeft: 56 }}>
               {bars.map((b) => (
                 <div key={b.label} className="text-center">
-                  <div className="text-[11px] font-medium truncate">{b.label}</div>
-                  <div className="text-[10px]" style={{ color: "#71717A" }}>{b.pct}%</div>
+                  <div className="text-[12px] font-medium text-white">{b.label}</div>
+                  <div className="text-[11px]" style={{ color: "#71717A" }}>{b.pct}%</div>
                 </div>
               ))}
             </div>
