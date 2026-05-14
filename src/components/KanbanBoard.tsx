@@ -308,6 +308,8 @@ export function KanbanBoard({ jobId, stages }: { jobId: string; stages: string[]
               )}
             </Droppable>
           ))}
+          </div>
+          <div className="pointer-events-none absolute top-0 right-0 bottom-2 w-12 bg-gradient-to-l from-background to-transparent md:hidden" />
         </div>
       </DragDropContext>
     </div>
