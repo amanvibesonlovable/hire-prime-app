@@ -189,8 +189,8 @@ function Dashboard() {
   });
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="space-y-8">
+      <div className="mb-4">
         <h2 className="text-[28px] font-semibold text-foreground">{greeting()}, {firstName}</h2>
         <p className="text-sm text-muted-foreground mt-1">Here's your hiring overview.</p>
       </div>
