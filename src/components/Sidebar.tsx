@@ -1,13 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useState } from "react";
 import {
   LayoutDashboard,
   Briefcase,
   Users,
   BarChart3,
   Settings,
-  ChevronLeft,
-  ChevronRight,
   LogOut,
   Menu,
 } from "lucide-react";
@@ -16,6 +13,7 @@ import { initials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import meridianLogo from "@/assets/meridian-logo.png";
 
 const items = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -26,43 +24,44 @@ const items = [
 ] as const;
 
 export function Sidebar({
-  collapsed,
-  onToggle,
   mobile = false,
   onItemClick,
 }: {
-  collapsed: boolean;
-  onToggle: () => void;
+  collapsed?: boolean;
+  onToggle?: () => void;
   mobile?: boolean;
   onItemClick?: () => void;
 }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const { profile, signOut } = useAuth();
 
+  // Mobile drawer keeps full labels; desktop is permanently icon-only.
+  const iconOnly = !mobile;
+
   return (
     <aside
       className={cn(
-        "flex flex-col bg-sidebar border-r border-sidebar-border transition-[width] duration-150 h-screen sticky top-0 z-30",
-        collapsed && !mobile ? "w-16" : "w-60",
+        "flex flex-col bg-sidebar border-r border-sidebar-border h-screen sticky top-0 z-30",
+        iconOnly ? "w-16" : "w-60",
       )}
     >
-      <div className="flex items-center justify-between h-14 px-4 border-b border-sidebar-border">
-        <Link to="/dashboard" className="font-mono font-semibold text-base tracking-[0.1em] text-foreground">
-          {collapsed && !mobile ? "M" : "MERIDIAN"}
-        </Link>
-        {!mobile && (
-          <button
-            onClick={onToggle}
-            className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded"
-            aria-label="Toggle sidebar"
-          >
-            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </button>
+      <div
+        className={cn(
+          "flex items-center h-14 border-b border-sidebar-border",
+          iconOnly ? "justify-center px-0" : "px-4",
         )}
+      >
+        <Link to="/dashboard" className="flex items-center" aria-label="Meridian home">
+          {iconOnly ? (
+            <img src={meridianLogo} alt="Meridian" style={{ height: 28, width: "auto" }} />
+          ) : (
+            <span className="font-mono font-semibold text-base tracking-[0.1em] text-foreground">MERIDIAN</span>
+          )}
+        </Link>
       </div>
 
       <nav className="flex-1 py-3 px-2 space-y-0.5">
-        <TooltipProvider delayDuration={100}>
+        <TooltipProvider delayDuration={150}>
           {items.map((item) => {
             const active = path.startsWith(item.to);
             const Icon = item.icon;
@@ -71,18 +70,18 @@ export function Sidebar({
                 to={item.to}
                 onClick={onItemClick}
                 className={cn(
-                  "group flex items-center gap-3 px-3 h-9 rounded-md text-[13px] font-medium transition-colors relative",
+                  "group relative flex items-center rounded-md text-[13px] font-medium transition-colors",
                   active
                     ? "bg-surface text-foreground"
                     : "text-muted-foreground hover:bg-surface hover:text-foreground",
-                  collapsed && !mobile && "justify-center px-0",
+                  iconOnly ? "h-10 justify-center" : "h-9 px-3 gap-3",
                 )}
               >
                 {active && (
                   <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] bg-primary rounded-r" />
                 )}
-                <Icon className="h-4 w-4 shrink-0" />
-                {(!collapsed || mobile) && (
+                <Icon className="h-5 w-5 shrink-0" />
+                {!iconOnly && (
                   <>
                     <span className="flex-1">{item.label}</span>
                     {"soon" in item && item.soon && (
@@ -94,11 +93,18 @@ export function Sidebar({
                 )}
               </Link>
             );
-            if (collapsed && !mobile) {
+            if (iconOnly) {
+              const tip = "soon" in item && item.soon ? `${item.label} (Coming soon)` : item.label;
               return (
                 <Tooltip key={item.to}>
                   <TooltipTrigger asChild>{inner}</TooltipTrigger>
-                  <TooltipContent side="right">{item.label}</TooltipContent>
+                  <TooltipContent
+                    side="right"
+                    sideOffset={8}
+                    className="bg-[#1E1E22] text-white border border-[#2A2A2E] rounded-md px-3 py-1 text-[13px] shadow-lg"
+                  >
+                    {tip}
+                  </TooltipContent>
                 </Tooltip>
               );
             }
@@ -108,33 +114,52 @@ export function Sidebar({
       </nav>
 
       <div className="p-2 border-t border-sidebar-border">
-        <Popover>
-          <PopoverTrigger asChild>
-            <button
-              className={cn(
-                "flex items-center gap-3 w-full px-2 h-12 rounded-md hover:bg-surface transition-colors",
-                collapsed && !mobile && "justify-center px-0",
-              )}
-            >
-              <div className="h-8 w-8 rounded-full bg-surface-hover flex items-center justify-center text-[12px] font-mono font-medium text-foreground shrink-0">
-                {initials(profile?.full_name || "U")}
-              </div>
-              {(!collapsed || mobile) && (
-                <span className="text-[13px] font-medium text-foreground truncate">
-                  {profile?.full_name || "Loading..."}
-                </span>
-              )}
-            </button>
-          </PopoverTrigger>
-          <PopoverContent side="right" align="end" className="w-48 p-1">
-            <button
-              onClick={() => signOut()}
-              className="flex items-center gap-2 w-full px-3 h-9 rounded-md text-[13px] text-foreground hover:bg-surface-hover transition-colors"
-            >
-              <LogOut className="h-4 w-4" /> Sign out
-            </button>
-          </PopoverContent>
-        </Popover>
+        <TooltipProvider delayDuration={150}>
+          <Popover>
+            {iconOnly ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <PopoverTrigger asChild>
+                    <button
+                      className="flex items-center justify-center w-full h-12 rounded-md hover:bg-surface transition-colors"
+                      aria-label={profile?.full_name || "Account"}
+                    >
+                      <div className="h-8 w-8 rounded-full bg-surface-hover flex items-center justify-center text-[12px] font-mono font-medium text-foreground shrink-0">
+                        {initials(profile?.full_name || "U")}
+                      </div>
+                    </button>
+                  </PopoverTrigger>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="right"
+                  sideOffset={8}
+                  className="bg-[#1E1E22] text-white border border-[#2A2A2E] rounded-md px-3 py-1 text-[13px] shadow-lg"
+                >
+                  {profile?.full_name || "Account"}
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <PopoverTrigger asChild>
+                <button className="flex items-center gap-3 w-full px-2 h-12 rounded-md hover:bg-surface transition-colors">
+                  <div className="h-8 w-8 rounded-full bg-surface-hover flex items-center justify-center text-[12px] font-mono font-medium text-foreground shrink-0">
+                    {initials(profile?.full_name || "U")}
+                  </div>
+                  <span className="text-[13px] font-medium text-foreground truncate">
+                    {profile?.full_name || "Loading..."}
+                  </span>
+                </button>
+              </PopoverTrigger>
+            )}
+            <PopoverContent side="right" align="end" className="w-48 p-1">
+              <button
+                onClick={() => signOut()}
+                className="flex items-center gap-2 w-full px-3 h-9 rounded-md text-[13px] text-foreground hover:bg-surface-hover transition-colors"
+              >
+                <LogOut className="h-4 w-4" /> Sign out
+              </button>
+            </PopoverContent>
+          </Popover>
+        </TooltipProvider>
       </div>
     </aside>
   );
