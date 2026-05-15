@@ -108,6 +108,14 @@ function ApplyPage() {
 
     setBusy(true);
     try {
+      // 90-day cooldown check across ALL jobs
+      const cd = await checkCooldown(email);
+      if (cd) {
+        setCooldown(cd);
+        setBusy(false);
+        return;
+      }
+
       // upsert candidate
       const { data: existing } = await supabase.from("candidates").select("id").eq("email", email).maybeSingle();
       let candidateId = existing?.id;
