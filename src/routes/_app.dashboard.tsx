@@ -441,9 +441,14 @@ function StatCard({
   label, value, icon: Icon, color, trend, loading,
 }: { label: string; value?: number; icon: any; color: string; trend: number | null | undefined; loading: boolean }) {
   return (
-    <div className="rounded-xl border border-[#1E1E22] bg-[#141416] hover:border-border-strong transition-colors" style={{ padding: "20px 24px" }}>
+    <div className="group rounded-xl border border-[#1E1E22] bg-[#141416] hover:border-border-strong transition-colors" style={{ padding: "20px 24px" }}>
       <div className="flex items-center gap-4">
-        <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 56, height: 56, background: color + "26" }}>
+        <div
+          className="rounded-full flex items-center justify-center shrink-0 transition-all duration-200 group-hover:scale-[1.02]"
+          style={{ width: 56, height: 56, background: color + "26" }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = color + "40")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = color + "26")}
+        >
           <Icon className="h-6 w-6" style={{ color }} />
         </div>
         <div className="min-w-0">
@@ -453,13 +458,13 @@ function StatCard({
           ) : (
             <div className="font-mono font-semibold text-foreground leading-tight" style={{ fontSize: 28 }}>{value ?? 0}</div>
           )}
-          <div className="text-[12px] mt-0.5">
+          <div className="mt-0.5">
             {trend == null ? (
-              <span className="text-[#71717A]">—</span>
+              <span className="text-[11px] text-[#71717A]">No prior data</span>
             ) : trend >= 0 ? (
-              <span style={{ color: "#22C55E" }}>↑ {trend}% vs last 30 days</span>
+              <span className="text-[12px]" style={{ color: "#22C55E" }}>↑ {trend}% vs last 30 days</span>
             ) : (
-              <span style={{ color: "#EF4444" }}>↓ {Math.abs(trend)}% vs last 30 days</span>
+              <span className="text-[12px]" style={{ color: "#EF4444" }}>↓ {Math.abs(trend)}% vs last 30 days</span>
             )}
           </div>
         </div>
