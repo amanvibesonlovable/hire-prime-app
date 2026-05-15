@@ -7,8 +7,25 @@ import {
 import { XAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { greeting, relTime, initials } from "@/lib/format";
-import { StatusBadge, DepartmentBadge, StageBadge } from "@/components/StatusBadge";
+import { greeting, initials } from "@/lib/format";
+import { StageBadge } from "@/components/StatusBadge";
+
+function compactRel(date: string | null | undefined) {
+  if (!date) return "—";
+  const t = new Date(date).getTime();
+  if (isNaN(t)) return "—";
+  const s = Math.max(1, Math.floor((Date.now() - t) / 1000));
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  if (d < 30) return `${d}d ago`;
+  const mo = Math.floor(d / 30);
+  if (mo < 12) return `${mo}mo ago`;
+  return `${Math.floor(mo / 12)}y ago`;
+}
 import { EmptyState } from "@/components/EmptyState";
 import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
@@ -34,9 +51,9 @@ function scoreColors(score: number) {
 
 function recBadge(rec: string | null) {
   if (rec === "Strong Yes") return { bg: "#22C55E15", color: "#22C55E", label: "Strong Hire" };
-  if (rec === "Yes") return { bg: "#3B82F615", color: "#3B82F6", label: "Top Match" };
-  if (rec === "Maybe") return { bg: "#F59E0B15", color: "#F59E0B", label: "Potential" };
-  if (rec === "No") return { bg: "#EF444415", color: "#EF4444", label: "Not a Match" };
+  if (rec === "Yes") return { bg: "#3B82F615", color: "#3B82F6", label: "Recommended" };
+  if (rec === "Maybe") return { bg: "#F59E0B15", color: "#F59E0B", label: "Worth Reviewing" };
+  if (rec === "No") return { bg: "#EF444415", color: "#EF4444", label: "Low Match" };
   return null;
 }
 
@@ -172,8 +189,8 @@ function Dashboard() {
   });
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="space-y-8">
+      <div className="mb-4">
         <h2 className="text-[28px] font-semibold text-foreground">{greeting()}, {firstName}</h2>
         <p className="text-sm text-muted-foreground mt-1">Here's your hiring overview.</p>
       </div>
@@ -187,48 +204,48 @@ function Dashboard() {
       </div>
 
       {/* Pipeline overview */}
-      <section className="rounded-xl border border-[#1E1E22] bg-[#141416] p-6">
+      <section className="rounded-xl border border-[#1E1E22] bg-[#141416] p-8">
         <div className="flex items-center gap-2 mb-6">
           <Workflow className="h-4 w-4 text-[#3B82F6]" />
           <h3 className="text-[16px] font-medium text-foreground">Hiring Pipeline Overview</h3>
         </div>
         {pipeline.isLoading ? (
-          <div className="flex gap-3">{Array.from({ length: 7 }).map((_, i) => <div key={i} className="skeleton h-24 flex-1" />)}</div>
+          <div className="grid grid-cols-7 gap-3">{Array.from({ length: 7 }).map((_, i) => <div key={i} className="skeleton h-28" />)}</div>
         ) : (
-          <div className="flex items-start gap-2 overflow-x-auto pb-2">
-            {STAGES.map((s, i) => {
-              const count = pipeline.data?.counts[s.name] || 0;
-              const pct = pipeline.data?.total ? Math.round((count / pipeline.data.total) * 100) : 0;
-              const Icon = s.icon;
-              return (
-                <div key={s.name} className="flex items-start gap-2 shrink-0">
-                  <div className="flex flex-col items-center text-center min-w-[88px]">
-                    <div className="rounded-full flex items-center justify-center" style={{ width: 48, height: 48, background: s.color + "26" }}>
-                      <Icon className="h-5 w-5" style={{ color: s.color }} />
+          <div className="overflow-x-auto pb-2 -mx-2 px-2">
+            <div className="grid grid-flow-col auto-cols-fr items-start min-w-[640px]">
+              {STAGES.map((s, i) => {
+                const count = pipeline.data?.counts[s.name] || 0;
+                const pct = pipeline.data?.total ? Math.round((count / pipeline.data.total) * 100) : 0;
+                const Icon = s.icon;
+                return (
+                  <div key={s.name} className="contents">
+                    <div className="flex flex-col items-center text-center px-2">
+                      <div className="rounded-full flex items-center justify-center" style={{ width: 52, height: 52, background: s.color + "26" }}>
+                        <Icon className="h-5 w-5" style={{ color: s.color }} />
+                      </div>
+                      <div className="mt-3 text-[13px] font-medium text-foreground">{s.name}</div>
+                      <div className="mt-1.5 text-[28px] font-mono font-semibold text-foreground leading-none">{count}</div>
+                      <div className="mt-1.5 text-[12px] text-[#71717A]">{pct}%</div>
                     </div>
-                    <div className="mt-2 text-[13px] font-medium text-foreground">{s.name}</div>
-                    <div className="mt-1 text-[24px] font-mono font-semibold text-foreground leading-none">{count}</div>
-                    <div className="mt-1 text-[12px] text-[#71717A]">{pct}%</div>
+                    {i < STAGES.length - 1 && (
+                      <div className="flex items-center w-full" style={{ height: 52 }}>
+                        <div className="flex-1 h-px bg-[#1E1E22]" />
+                        <ChevronRight className="h-3.5 w-3.5 -ml-1 text-[#3B82F6] shrink-0" />
+                      </div>
+                    )}
                   </div>
-                  {i < STAGES.length - 1 && (
-                    <div className="hidden sm:flex items-center h-12 px-1">
-                      <svg width="32" height="10" viewBox="0 0 32 10">
-                        <line x1="0" y1="5" x2="26" y2="5" stroke="#1E1E22" strokeWidth="1.5" />
-                        <polyline points="22,1 28,5 22,9" fill="none" stroke="#3B82F6" strokeWidth="1.5" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
       </section>
 
       {/* 3-column row */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_minmax(0,360px)_minmax(0,360px)] gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* Recent Applications */}
-        <section className="rounded-xl border border-[#1E1E22] bg-[#141416] overflow-hidden xl:col-span-1">
+        <section className="rounded-xl border border-[#1E1E22] bg-[#141416] overflow-hidden lg:col-span-2 xl:col-span-1">
           <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E1E22]">
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-[#3B82F6]" />
@@ -241,15 +258,14 @@ function Dashboard() {
           ) : (recent.data?.length ?? 0) === 0 ? (
             <EmptyState icon={FileText} title="No applications yet" description="Create a job and share the application link to start receiving applications." />
           ) : (
-            <table className="w-full text-[13px]">
+            <table className="w-full text-[13px] table-fixed">
               <thead>
                 <tr className="text-left text-muted-foreground">
-                  <th className="font-medium px-5 py-3">Candidate</th>
+                  <th className="font-medium px-5 py-3 w-[40%]">Candidate</th>
                   <th className="font-medium px-5 py-3">Job</th>
-                  <th className="font-medium px-5 py-3">Stage</th>
-                  <th className="font-medium px-5 py-3">AI</th>
-                  <th className="font-medium px-5 py-3">Applied</th>
-                  <th className="font-medium px-5 py-3">Status</th>
+                  <th className="font-medium px-5 py-3 w-[110px]">Stage</th>
+                  <th className="font-medium px-5 py-3 w-[60px]">AI</th>
+                  <th className="font-medium px-5 py-3 w-[80px]">Applied</th>
                 </tr>
               </thead>
               <tbody>
@@ -258,7 +274,7 @@ function Dashboard() {
                   return (
                     <tr key={row.id} className="border-t border-[#1E1E22] hover:bg-[#1A1A1E] transition-colors">
                       <td className="px-5 py-3">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
                           <div className="rounded-full bg-[#1E1E22] text-white flex items-center justify-center shrink-0" style={{ width: 32, height: 32, fontSize: 12, fontWeight: 500 }}>
                             {initials(name) || "?"}
                           </div>
@@ -268,7 +284,7 @@ function Dashboard() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-3 text-foreground">{row.job?.title}</td>
+                      <td className="px-5 py-3 text-foreground truncate" title={row.job?.title}>{row.job?.title}</td>
                       <td className="px-5 py-3"><StageBadge stage={row.current_stage} /></td>
                       <td className="px-5 py-3">
                         {row.ai_score != null ? (() => {
@@ -280,8 +296,7 @@ function Dashboard() {
                           );
                         })() : <span className="text-muted-foreground">—</span>}
                       </td>
-                      <td className="px-5 py-3 text-muted-foreground">{relTime(row.applied_at)}</td>
-                      <td className="px-5 py-3"><StatusBadge status={row.status} /></td>
+                      <td className="px-5 py-3 text-muted-foreground whitespace-nowrap">{compactRel(row.applied_at)}</td>
                     </tr>
                   );
                 })}
@@ -313,7 +328,7 @@ function Dashboard() {
                   <button
                     key={row.id}
                     onClick={() => row.candidate?.id && navigate({ to: "/candidates/$candidateId", params: { candidateId: row.candidate.id } })}
-                    className={`w-full flex items-center gap-3 py-4 text-left hover:bg-[#1A1A1E] transition-colors -mx-2 px-2 rounded-md ${idx < aiRecs.data!.length - 1 ? "border-b border-[#1E1E22]" : ""}`}
+                    className={`w-full flex items-center gap-4 py-5 text-left hover:bg-[#1A1A1E] transition-colors -mx-2 px-2 rounded-md ${idx < aiRecs.data!.length - 1 ? "border-b border-[#1E1E22]" : ""}`}
                   >
                     <div className="rounded-full flex items-center justify-center font-mono font-semibold shrink-0" style={{ width: 48, height: 48, background: c.bg, color: c.color, fontSize: 18 }}>
                       {row.ai_score}
@@ -324,9 +339,14 @@ function Dashboard() {
                     <div className="min-w-0 flex-1">
                       <div className="text-[14px] font-medium text-foreground truncate">{name || "—"}</div>
                       <div className="text-[13px] text-[#71717A] truncate">{row.job?.title}</div>
-                      {rb && (
-                        <div className="mt-1.5 flex gap-1.5 flex-wrap">
-                          <span className="inline-flex items-center rounded-[4px] px-1.5 py-0.5 text-[11px] font-medium" style={{ background: rb.bg, color: rb.color }}>{rb.label}</span>
+                      {(rb || row.ai_score >= 8) && (
+                        <div className="mt-2 flex gap-1.5 flex-wrap">
+                          {rb && (
+                            <span className="inline-flex items-center rounded-md px-2.5 py-1 text-[12px] font-medium" style={{ background: rb.bg, color: rb.color }}>{rb.label}</span>
+                          )}
+                          {row.ai_score >= 8 && (
+                            <span className="inline-flex items-center rounded-md px-2.5 py-1 text-[12px] font-medium" style={{ background: "#3B82F615", color: "#3B82F6" }}>Top Match</span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -350,33 +370,40 @@ function Dashboard() {
             <span className="inline-flex items-center rounded-full bg-[#1E1E22] text-[#71717A] px-2 py-0.5" style={{ fontSize: 11 }}>Last 30 days</span>
           </div>
 
-          <div style={{ height: 140 }}>
+          <div className="relative" style={{ height: 140 }}>
             {analytics.isLoading ? (
               <div className="skeleton h-full w-full" />
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={analytics.data?.days || []} margin={{ top: 5, right: 4, left: 4, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="appsGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.25} />
-                      <stop offset="100%" stopColor="#3B82F6" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis
-                    dataKey="label"
-                    stroke="#71717A"
-                    tick={{ fill: "#71717A", fontSize: 10 }}
-                    tickLine={false}
-                    axisLine={false}
-                    interval={6}
-                  />
-                  <Tooltip
-                    contentStyle={{ background: "#0A0A0B", border: "1px solid #1E1E22", borderRadius: 6, fontSize: 12 }}
-                    labelStyle={{ color: "#fff" }}
-                  />
-                  <Area type="monotone" dataKey="count" stroke="#3B82F6" strokeWidth={2} fill="url(#appsGrad)" />
-                </AreaChart>
-              </ResponsiveContainer>
+              <>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={analytics.data?.days || []} margin={{ top: 5, right: 4, left: 4, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="appsGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.25} />
+                        <stop offset="100%" stopColor="#3B82F6" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis
+                      dataKey="label"
+                      stroke="#71717A"
+                      tick={{ fill: "#71717A", fontSize: 10 }}
+                      tickLine={false}
+                      axisLine={false}
+                      interval={6}
+                    />
+                    <Tooltip
+                      contentStyle={{ background: "#0A0A0B", border: "1px solid #1E1E22", borderRadius: 6, fontSize: 12 }}
+                      labelStyle={{ color: "#fff" }}
+                    />
+                    <Area type="monotone" dataKey="count" stroke="#3B82F6" strokeWidth={2} fill="url(#appsGrad)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+                {(analytics.data?.days.filter((d) => d.count > 0).length ?? 0) < 3 && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span className="text-[12px] text-[#71717A]">More data needed for trends</span>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
@@ -392,9 +419,13 @@ function Dashboard() {
                 </div>
                 <div className="min-w-0">
                   <div className="text-[12px] text-[#71717A]">Bottleneck (Time in Stage)</div>
-                  <div className="flex items-baseline gap-2">
+                  <div className="flex items-baseline gap-2 flex-wrap">
                     <div className="text-[16px] font-medium text-foreground">{analytics.data.bottleneck.stage}</div>
-                    <div className="text-[20px] font-mono font-semibold text-foreground">{analytics.data.bottleneck.avg.toFixed(1)}d</div>
+                    <div className="text-[20px] font-mono font-semibold text-foreground">
+                      {analytics.data.bottleneck.avg.toFixed(1)}
+                      <span className="text-[14px] font-sans font-normal text-[#71717A] ml-1">days</span>
+                    </div>
+                    <span className="text-[12px] text-[#71717A]">—</span>
                   </div>
                 </div>
               </div>
@@ -410,9 +441,14 @@ function StatCard({
   label, value, icon: Icon, color, trend, loading,
 }: { label: string; value?: number; icon: any; color: string; trend: number | null | undefined; loading: boolean }) {
   return (
-    <div className="rounded-xl border border-[#1E1E22] bg-[#141416] hover:border-border-strong transition-colors" style={{ padding: "20px 24px" }}>
+    <div className="group rounded-xl border border-[#1E1E22] bg-[#141416] hover:border-border-strong transition-colors" style={{ padding: "20px 24px" }}>
       <div className="flex items-center gap-4">
-        <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 56, height: 56, background: color + "26" }}>
+        <div
+          className="rounded-full flex items-center justify-center shrink-0 transition-all duration-200 group-hover:scale-[1.02]"
+          style={{ width: 56, height: 56, background: color + "26" }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = color + "40")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = color + "26")}
+        >
           <Icon className="h-6 w-6" style={{ color }} />
         </div>
         <div className="min-w-0">
@@ -422,13 +458,13 @@ function StatCard({
           ) : (
             <div className="font-mono font-semibold text-foreground leading-tight" style={{ fontSize: 28 }}>{value ?? 0}</div>
           )}
-          <div className="text-[12px] mt-0.5">
+          <div className="mt-0.5">
             {trend == null ? (
-              <span className="text-[#71717A]">—</span>
+              <span className="text-[11px] text-[#71717A]">No prior data</span>
             ) : trend >= 0 ? (
-              <span style={{ color: "#22C55E" }}>↑ {trend}% vs last 30 days</span>
+              <span className="text-[12px]" style={{ color: "#22C55E" }}>↑ {trend}% vs last 30 days</span>
             ) : (
-              <span style={{ color: "#EF4444" }}>↓ {Math.abs(trend)}% vs last 30 days</span>
+              <span className="text-[12px]" style={{ color: "#EF4444" }}>↓ {Math.abs(trend)}% vs last 30 days</span>
             )}
           </div>
         </div>
