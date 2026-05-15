@@ -272,3 +272,48 @@ function Field({ label, error, children }: { label: string; error?: string; chil
     </div>
   );
 }
+
+function formatLongDate(d: Date) {
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
+
+function humanTimeSince(fromIso: string) {
+  const days = Math.floor((Date.now() - new Date(fromIso).getTime()) / (24 * 60 * 60 * 1000));
+  if (days < 7) return "a few days";
+  if (days < 14) return "about a week";
+  if (days < 30) return "a couple of weeks";
+  if (days < 60) return "about a month";
+  return "a couple of months";
+}
+
+function CooldownScreen({ lastAppliedAt, cooldownDays }: { lastAppliedAt: string; cooldownDays: number }) {
+  const endsAt = new Date(new Date(lastAppliedAt).getTime() + cooldownDays * 24 * 60 * 60 * 1000);
+  return (
+    <div className="text-center py-4 animate-in fade-in slide-in-from-bottom-2 duration-[400ms] ease-out">
+      <div
+        className="mx-auto h-16 w-16 rounded-full flex items-center justify-center mb-5"
+        style={{ backgroundColor: "rgba(59,130,246,0.10)", boxShadow: "0 0 24px rgba(59,130,246,0.2)" }}
+      >
+        <ShieldCheck className="h-12 w-12" style={{ color: "#3B82F6" }} />
+      </div>
+      <h2 className="text-[22px] font-semibold text-white mb-3">Your profile is safe with us</h2>
+      <p
+        className="mx-auto text-[15px]"
+        style={{ color: "#9CA3AF", lineHeight: 1.7, maxWidth: 420 }}
+      >
+        We already have your application on file from {humanTimeSince(lastAppliedAt)} ago. Our team reviews every profile carefully, and we'll reach out to you when a relevant opportunity comes up.
+      </p>
+      <div
+        className="mt-6 mx-auto rounded-lg text-center"
+        style={{ backgroundColor: "#141416", border: "1px solid #1E1E22", padding: 16, maxWidth: 420 }}
+      >
+        <p className="text-[13px]" style={{ color: "#9CA3AF" }}>
+          You can submit a new application after {formatLongDate(endsAt)}.
+        </p>
+      </div>
+      <p className="mt-4 text-[13px] italic" style={{ color: "#71717A" }}>
+        💙 We value every candidate. No application goes unreviewed.
+      </p>
+    </div>
+  );
+}
