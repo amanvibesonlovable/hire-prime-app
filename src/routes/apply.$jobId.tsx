@@ -37,6 +37,47 @@ function ApplyPage() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [cooldown, setCooldown] = useState<{ lastAppliedAt: string } | null>(null);
+  const [emailWarning, setEmailWarning] = useState<{ endsAt: string } | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const COOLDOWN_DAYS = 90;
+  const isValidEmail = (e: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
+
+  // Returns { lastAppliedAt } if a recent application exists within COOLDOWN_DAYS, else null.
+  const checkCooldown = async (rawEmail: string) => {
+    const e = rawEmail.trim();
+    if (!isValidEmail(e)) return null;
+    const since = new Date(Date.now() - COOLDOWN_DAYS * 24 * 60 * 60 * 1000).toISOString();
+    const { data: cands } = await supabase.from("candidates").select("id").ilike("email", e);
+    const ids = (cands ?? []).map((c) => c.id);
+    if (ids.length === 0) return null;
+    const { data: apps } = await supabase
+      .from("applications")
+      .select("applied_at")
+      .in("candidate_id", ids)
+      .gte("applied_at", since)
+      .order("applied_at", { ascending: false })
+      .limit(1);
+    const last = apps?.[0];
+    return last ? { lastAppliedAt: last.applied_at } : null;
+  };
+
+  const onEmailBlur = () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!isValidEmail(email)) { setEmailWarning(null); return; }
+    debounceRef.current = setTimeout(async () => {
+      const result = await checkCooldown(email);
+      if (result) {
+        const ends = new Date(new Date(result.lastAppliedAt).getTime() + COOLDOWN_DAYS * 24 * 60 * 60 * 1000);
+        setEmailWarning({ endsAt: formatLongDate(ends) });
+      } else {
+        setEmailWarning(null);
+      }
+    }, 500);
+  };
+
+  useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
 
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); };
   const handleDragEnter = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
