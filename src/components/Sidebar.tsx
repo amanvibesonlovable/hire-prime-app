@@ -7,8 +7,11 @@ import {
   Settings,
   LogOut,
   Menu,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme";
 import { initials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
