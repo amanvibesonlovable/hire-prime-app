@@ -24,7 +24,6 @@ const titleMap: Record<string, string> = {
 
 function AppLayout() {
   const { loading, session } = useAuth();
-  const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const path = useRouterState({ select: (s) => s.location.pathname });
 
@@ -40,11 +39,11 @@ function AppLayout() {
   return (
     <div className="min-h-screen flex bg-background">
       <div className="hidden md:block">
-        <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />
+        <Sidebar />
       </div>
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent side="left" className="p-0 w-60 bg-sidebar border-sidebar-border">
-          <Sidebar collapsed={false} onToggle={() => {}} mobile onItemClick={() => setMobileOpen(false)} />
+          <Sidebar mobile onItemClick={() => setMobileOpen(false)} />
         </SheetContent>
       </Sheet>
       <div className="flex-1 min-w-0 flex flex-col">
