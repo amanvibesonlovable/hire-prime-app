@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { Check, MapPin, Upload, X } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { AlertTriangle, Check, MapPin, ShieldCheck, Upload, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,47 @@ function ApplyPage() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [cooldown, setCooldown] = useState<{ lastAppliedAt: string } | null>(null);
+  const [emailWarning, setEmailWarning] = useState<{ endsAt: string } | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const COOLDOWN_DAYS = 90;
+  const isValidEmail = (e: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
+
+  // Returns { lastAppliedAt } if a recent application exists within COOLDOWN_DAYS, else null.
+  const checkCooldown = async (rawEmail: string) => {
+    const e = rawEmail.trim();
+    if (!isValidEmail(e)) return null;
+    const since = new Date(Date.now() - COOLDOWN_DAYS * 24 * 60 * 60 * 1000).toISOString();
+    const { data: cands } = await supabase.from("candidates").select("id").ilike("email", e);
+    const ids = (cands ?? []).map((c) => c.id);
+    if (ids.length === 0) return null;
+    const { data: apps } = await supabase
+      .from("applications")
+      .select("applied_at")
+      .in("candidate_id", ids)
+      .gte("applied_at", since)
+      .order("applied_at", { ascending: false })
+      .limit(1);
+    const last = apps?.[0];
+    return last ? { lastAppliedAt: last.applied_at } : null;
+  };
+
+  const onEmailBlur = () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!isValidEmail(email)) { setEmailWarning(null); return; }
+    debounceRef.current = setTimeout(async () => {
+      const result = await checkCooldown(email);
+      if (result) {
+        const ends = new Date(new Date(result.lastAppliedAt).getTime() + COOLDOWN_DAYS * 24 * 60 * 60 * 1000);
+        setEmailWarning({ endsAt: formatLongDate(ends) });
+      } else {
+        setEmailWarning(null);
+      }
+    }, 500);
+  };
+
+  useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
 
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); };
   const handleDragEnter = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
@@ -67,6 +108,14 @@ function ApplyPage() {
 
     setBusy(true);
     try {
+      // 90-day cooldown check across ALL jobs
+      const cd = await checkCooldown(email);
+      if (cd) {
+        setCooldown(cd);
+        setBusy(false);
+        return;
+      }
+
       // upsert candidate
       const { data: existing } = await supabase.from("candidates").select("id").eq("email", email).maybeSingle();
       let candidateId = existing?.id;
@@ -135,6 +184,8 @@ function ApplyPage() {
         <div className="text-center py-10 text-muted-foreground text-sm">
           This position is no longer accepting applications.
         </div>
+      ) : cooldown ? (
+        <CooldownScreen lastAppliedAt={cooldown.lastAppliedAt} cooldownDays={COOLDOWN_DAYS} />
       ) : done ? (
         <div className="text-center py-8 space-y-3 animate-in fade-in zoom-in-95 duration-200">
           <div className="mx-auto h-14 w-14 rounded-full bg-success/15 flex items-center justify-center">
@@ -152,7 +203,21 @@ function ApplyPage() {
             <Field label="First Name *" error={errors.first}><Input value={first} onChange={(e) => setFirst(e.target.value)} className={errors.first ? "border-danger" : ""} /></Field>
             <Field label="Last Name *" error={errors.last}><Input value={last} onChange={(e) => setLast(e.target.value)} className={errors.last ? "border-danger" : ""} /></Field>
           </div>
-          <Field label="Email *" error={errors.email}><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={errors.email ? "border-danger" : ""} /></Field>
+          <Field label="Email *" error={errors.email}>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={onEmailBlur}
+              className={errors.email ? "border-danger" : ""}
+            />
+            {emailWarning && (
+              <p className="mt-1.5 flex items-start gap-1.5 text-[13px]" style={{ color: "#F59E0B" }}>
+                <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                <span>You've recently applied. You can submit a new application after {emailWarning.endsAt}.</span>
+              </p>
+            )}
+          </Field>
           <Field label="Phone"><Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} /></Field>
           <Field label="LinkedIn Profile URL"><Input value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/yourprofile" /></Field>
 
@@ -178,7 +243,7 @@ function ApplyPage() {
             )}
           </Field>
 
-          <Button type="submit" className="w-full h-9" disabled={busy}>
+          <Button type="submit" className="w-full h-9" disabled={busy || !!emailWarning}>
             {busy ? "Submitting..." : "Submit Application"}
           </Button>
         </form>
@@ -204,6 +269,51 @@ function Field({ label, error, children }: { label: string; error?: string; chil
       <Label>{label}</Label>
       {children}
       {error && <p className="text-[12px] text-danger">{error}</p>}
+    </div>
+  );
+}
+
+function formatLongDate(d: Date) {
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
+
+function humanTimeSince(fromIso: string) {
+  const days = Math.floor((Date.now() - new Date(fromIso).getTime()) / (24 * 60 * 60 * 1000));
+  if (days < 7) return "a few days";
+  if (days < 14) return "about a week";
+  if (days < 30) return "a couple of weeks";
+  if (days < 60) return "about a month";
+  return "a couple of months";
+}
+
+function CooldownScreen({ lastAppliedAt, cooldownDays }: { lastAppliedAt: string; cooldownDays: number }) {
+  const endsAt = new Date(new Date(lastAppliedAt).getTime() + cooldownDays * 24 * 60 * 60 * 1000);
+  return (
+    <div className="text-center py-4 animate-in fade-in slide-in-from-bottom-2 duration-[400ms] ease-out">
+      <div
+        className="mx-auto h-16 w-16 rounded-full flex items-center justify-center mb-5"
+        style={{ backgroundColor: "rgba(59,130,246,0.10)", boxShadow: "0 0 24px rgba(59,130,246,0.2)" }}
+      >
+        <ShieldCheck className="h-12 w-12" style={{ color: "#3B82F6" }} />
+      </div>
+      <h2 className="text-[22px] font-semibold text-white mb-3">Your profile is safe with us</h2>
+      <p
+        className="mx-auto text-[15px]"
+        style={{ color: "#9CA3AF", lineHeight: 1.7, maxWidth: 420 }}
+      >
+        We already have your application on file from {humanTimeSince(lastAppliedAt)} ago. Our team reviews every profile carefully, and we'll reach out to you when a relevant opportunity comes up.
+      </p>
+      <div
+        className="mt-6 mx-auto rounded-lg text-center"
+        style={{ backgroundColor: "#141416", border: "1px solid #1E1E22", padding: 16, maxWidth: 420 }}
+      >
+        <p className="text-[13px]" style={{ color: "#9CA3AF" }}>
+          You can submit a new application after {formatLongDate(endsAt)}.
+        </p>
+      </div>
+      <p className="mt-4 text-[13px] italic" style={{ color: "#71717A" }}>
+        💙 We value every candidate. No application goes unreviewed.
+      </p>
     </div>
   );
 }
