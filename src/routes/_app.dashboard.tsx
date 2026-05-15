@@ -371,14 +371,15 @@ function Dashboard() {
                 <EmptyState icon={FileText} title="No applications yet" description="Create a job and share the application link to start receiving applications." />
               </div>
             ) : (
-              <div className="flex-1">
-                <table className="w-full text-[13px]">
+              <div className="flex-1 overflow-x-auto dash-scroll">
+                <table className="w-full text-[13px]" style={{ minWidth: 580 }}>
                   <thead>
                     <tr className="text-left">
-                      <th className="px-5 py-3 font-medium" style={{ fontSize: 12, color: "#64748B" }}>Candidate</th>
+                      <th className="px-5 py-3 font-medium whitespace-nowrap" style={{ fontSize: 12, color: "#64748B" }}>Candidate</th>
+                      <th className="px-5 py-3 font-medium whitespace-nowrap" style={{ fontSize: 12, color: "#64748B" }}>Role</th>
                       <th className="px-5 py-3 font-medium whitespace-nowrap" style={{ fontSize: 12, color: "#64748B" }}>Applied</th>
-                      <th className="px-5 py-3 font-medium" style={{ fontSize: 12, color: "#64748B" }}>Stage</th>
-                      <th className="px-5 py-3 font-medium" style={{ fontSize: 12, color: "#64748B" }}>AI</th>
+                      <th className="px-5 py-3 font-medium whitespace-nowrap" style={{ fontSize: 12, color: "#64748B" }}>Stage</th>
+                      <th className="px-5 py-3 font-medium whitespace-nowrap" style={{ fontSize: 12, color: "#64748B" }}>AI Score</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -401,6 +402,7 @@ function Dashboard() {
                               </div>
                             </div>
                           </td>
+                          <td className="px-5 py-3 whitespace-nowrap" style={{ fontSize: 13, color: "#CBD5E1" }}>{row.job?.title ?? "—"}</td>
                           <td className="px-5 py-3 whitespace-nowrap" style={{ fontSize: 13, color: "#94A3B8" }}>{formatShortDate(row.applied_at)}</td>
                           <td className="px-5 py-3"><StageChip stage={row.current_stage} /></td>
                           <td className="px-5 py-3">
@@ -462,9 +464,6 @@ function Dashboard() {
                         }}
                       >
                         {row.ai_score}
-                      </div>
-                      <div className="rounded-full text-white flex items-center justify-center shrink-0 ring-2 ring-white/10" style={{ width: 44, height: 44, fontSize: 15, fontWeight: 500, background: "rgba(255,255,255,0.06)" }}>
-                        {initials(name) || "?"}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="truncate" style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>{name || "—"}</div>
