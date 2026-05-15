@@ -370,33 +370,40 @@ function Dashboard() {
             <span className="inline-flex items-center rounded-full bg-[#1E1E22] text-[#71717A] px-2 py-0.5" style={{ fontSize: 11 }}>Last 30 days</span>
           </div>
 
-          <div style={{ height: 140 }}>
+          <div className="relative" style={{ height: 140 }}>
             {analytics.isLoading ? (
               <div className="skeleton h-full w-full" />
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={analytics.data?.days || []} margin={{ top: 5, right: 4, left: 4, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="appsGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.25} />
-                      <stop offset="100%" stopColor="#3B82F6" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis
-                    dataKey="label"
-                    stroke="#71717A"
-                    tick={{ fill: "#71717A", fontSize: 10 }}
-                    tickLine={false}
-                    axisLine={false}
-                    interval={6}
-                  />
-                  <Tooltip
-                    contentStyle={{ background: "#0A0A0B", border: "1px solid #1E1E22", borderRadius: 6, fontSize: 12 }}
-                    labelStyle={{ color: "#fff" }}
-                  />
-                  <Area type="monotone" dataKey="count" stroke="#3B82F6" strokeWidth={2} fill="url(#appsGrad)" />
-                </AreaChart>
-              </ResponsiveContainer>
+              <>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={analytics.data?.days || []} margin={{ top: 5, right: 4, left: 4, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="appsGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.25} />
+                        <stop offset="100%" stopColor="#3B82F6" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis
+                      dataKey="label"
+                      stroke="#71717A"
+                      tick={{ fill: "#71717A", fontSize: 10 }}
+                      tickLine={false}
+                      axisLine={false}
+                      interval={6}
+                    />
+                    <Tooltip
+                      contentStyle={{ background: "#0A0A0B", border: "1px solid #1E1E22", borderRadius: 6, fontSize: 12 }}
+                      labelStyle={{ color: "#fff" }}
+                    />
+                    <Area type="monotone" dataKey="count" stroke="#3B82F6" strokeWidth={2} fill="url(#appsGrad)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+                {(analytics.data?.days.filter((d) => d.count > 0).length ?? 0) < 3 && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span className="text-[12px] text-[#71717A]">More data needed for trends</span>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
