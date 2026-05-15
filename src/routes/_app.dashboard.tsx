@@ -328,7 +328,7 @@ function Dashboard() {
                   <button
                     key={row.id}
                     onClick={() => row.candidate?.id && navigate({ to: "/candidates/$candidateId", params: { candidateId: row.candidate.id } })}
-                    className={`w-full flex items-center gap-3 py-4 text-left hover:bg-[#1A1A1E] transition-colors -mx-2 px-2 rounded-md ${idx < aiRecs.data!.length - 1 ? "border-b border-[#1E1E22]" : ""}`}
+                    className={`w-full flex items-center gap-4 py-5 text-left hover:bg-[#1A1A1E] transition-colors -mx-2 px-2 rounded-md ${idx < aiRecs.data!.length - 1 ? "border-b border-[#1E1E22]" : ""}`}
                   >
                     <div className="rounded-full flex items-center justify-center font-mono font-semibold shrink-0" style={{ width: 48, height: 48, background: c.bg, color: c.color, fontSize: 18 }}>
                       {row.ai_score}
@@ -339,9 +339,14 @@ function Dashboard() {
                     <div className="min-w-0 flex-1">
                       <div className="text-[14px] font-medium text-foreground truncate">{name || "—"}</div>
                       <div className="text-[13px] text-[#71717A] truncate">{row.job?.title}</div>
-                      {rb && (
-                        <div className="mt-1.5 flex gap-1.5 flex-wrap">
-                          <span className="inline-flex items-center rounded-[4px] px-1.5 py-0.5 text-[11px] font-medium" style={{ background: rb.bg, color: rb.color }}>{rb.label}</span>
+                      {(rb || row.ai_score >= 8) && (
+                        <div className="mt-2 flex gap-1.5 flex-wrap">
+                          {rb && (
+                            <span className="inline-flex items-center rounded-md px-2.5 py-1 text-[12px] font-medium" style={{ background: rb.bg, color: rb.color }}>{rb.label}</span>
+                          )}
+                          {row.ai_score >= 8 && (
+                            <span className="inline-flex items-center rounded-md px-2.5 py-1 text-[12px] font-medium" style={{ background: "#3B82F615", color: "#3B82F6" }}>Top Match</span>
+                          )}
                         </div>
                       )}
                     </div>
