@@ -176,3 +176,53 @@ export function MobileSidebarTrigger({ onClick }: { onClick: () => void }) {
     </button>
   );
 }
+
+function ThemeToggle({ iconOnly }: { iconOnly: boolean }) {
+  const { theme, toggle } = useTheme();
+  const isDark = theme === "dark";
+  const label = isDark ? "Switch to light mode" : "Switch to dark mode";
+  const btn = (
+    <button
+      onClick={toggle}
+      aria-label={label}
+      className={cn(
+        "flex items-center rounded-lg transition-colors",
+        "hover:bg-white/5 dark:hover:bg-white/5",
+        "text-[#9CA3AF] dark:text-[#71717A] hover:text-foreground",
+        iconOnly ? "h-10 w-10 mx-auto justify-center" : "w-full h-10 px-3 gap-3",
+      )}
+      style={!iconOnly ? undefined : undefined}
+    >
+      <span className="relative inline-flex h-5 w-5 items-center justify-center">
+        <Sun
+          className={cn(
+            "absolute h-5 w-5 transition-all duration-200",
+            isDark ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-75",
+          )}
+        />
+        <Moon
+          className={cn(
+            "absolute h-5 w-5 transition-all duration-200",
+            isDark ? "opacity-0 rotate-90 scale-75" : "opacity-100 rotate-0 scale-100",
+          )}
+        />
+      </span>
+      {!iconOnly && <span className="text-[13px] font-medium">{isDark ? "Light mode" : "Dark mode"}</span>}
+    </button>
+  );
+  if (!iconOnly) return btn;
+  return (
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>{btn}</TooltipTrigger>
+        <TooltipContent
+          side="right"
+          sideOffset={8}
+          className="bg-[#1E1E22] text-white border border-[#2A2A2E] rounded-md px-3 py-1 text-[13px] shadow-lg"
+        >
+          {label}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
