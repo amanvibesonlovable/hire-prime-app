@@ -204,40 +204,40 @@ function Dashboard() {
       </div>
 
       {/* Pipeline overview */}
-      <section className="rounded-xl border border-[#1E1E22] bg-[#141416] p-6">
+      <section className="rounded-xl border border-[#1E1E22] bg-[#141416] p-8">
         <div className="flex items-center gap-2 mb-6">
           <Workflow className="h-4 w-4 text-[#3B82F6]" />
           <h3 className="text-[16px] font-medium text-foreground">Hiring Pipeline Overview</h3>
         </div>
         {pipeline.isLoading ? (
-          <div className="flex gap-3">{Array.from({ length: 7 }).map((_, i) => <div key={i} className="skeleton h-24 flex-1" />)}</div>
+          <div className="grid grid-cols-7 gap-3">{Array.from({ length: 7 }).map((_, i) => <div key={i} className="skeleton h-28" />)}</div>
         ) : (
-          <div className="flex items-start gap-2 overflow-x-auto pb-2">
-            {STAGES.map((s, i) => {
-              const count = pipeline.data?.counts[s.name] || 0;
-              const pct = pipeline.data?.total ? Math.round((count / pipeline.data.total) * 100) : 0;
-              const Icon = s.icon;
-              return (
-                <div key={s.name} className="flex items-start gap-2 shrink-0">
-                  <div className="flex flex-col items-center text-center min-w-[88px]">
-                    <div className="rounded-full flex items-center justify-center" style={{ width: 48, height: 48, background: s.color + "26" }}>
-                      <Icon className="h-5 w-5" style={{ color: s.color }} />
+          <div className="overflow-x-auto pb-2 -mx-2 px-2">
+            <div className="grid grid-flow-col auto-cols-fr items-start min-w-[640px]">
+              {STAGES.map((s, i) => {
+                const count = pipeline.data?.counts[s.name] || 0;
+                const pct = pipeline.data?.total ? Math.round((count / pipeline.data.total) * 100) : 0;
+                const Icon = s.icon;
+                return (
+                  <div key={s.name} className="contents">
+                    <div className="flex flex-col items-center text-center px-2">
+                      <div className="rounded-full flex items-center justify-center" style={{ width: 52, height: 52, background: s.color + "26" }}>
+                        <Icon className="h-5 w-5" style={{ color: s.color }} />
+                      </div>
+                      <div className="mt-3 text-[13px] font-medium text-foreground">{s.name}</div>
+                      <div className="mt-1.5 text-[28px] font-mono font-semibold text-foreground leading-none">{count}</div>
+                      <div className="mt-1.5 text-[12px] text-[#71717A]">{pct}%</div>
                     </div>
-                    <div className="mt-2 text-[13px] font-medium text-foreground">{s.name}</div>
-                    <div className="mt-1 text-[24px] font-mono font-semibold text-foreground leading-none">{count}</div>
-                    <div className="mt-1 text-[12px] text-[#71717A]">{pct}%</div>
+                    {i < STAGES.length - 1 && (
+                      <div className="flex items-center w-full" style={{ height: 52 }}>
+                        <div className="flex-1 h-px bg-[#1E1E22]" />
+                        <ChevronRight className="h-3.5 w-3.5 -ml-1 text-[#3B82F6] shrink-0" />
+                      </div>
+                    )}
                   </div>
-                  {i < STAGES.length - 1 && (
-                    <div className="hidden sm:flex items-center h-12 px-1">
-                      <svg width="32" height="10" viewBox="0 0 32 10">
-                        <line x1="0" y1="5" x2="26" y2="5" stroke="#1E1E22" strokeWidth="1.5" />
-                        <polyline points="22,1 28,5 22,9" fill="none" stroke="#3B82F6" strokeWidth="1.5" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
       </section>
