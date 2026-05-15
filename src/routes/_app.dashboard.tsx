@@ -245,7 +245,7 @@ function Dashboard() {
       {/* 3-column row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* Recent Applications */}
-        <section className="rounded-xl border border-[#1E1E22] bg-[#141416] overflow-hidden xl:col-span-1">
+        <section className="rounded-xl border border-[#1E1E22] bg-[#141416] overflow-hidden lg:col-span-2 xl:col-span-1">
           <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E1E22]">
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-[#3B82F6]" />
@@ -258,15 +258,14 @@ function Dashboard() {
           ) : (recent.data?.length ?? 0) === 0 ? (
             <EmptyState icon={FileText} title="No applications yet" description="Create a job and share the application link to start receiving applications." />
           ) : (
-            <table className="w-full text-[13px]">
+            <table className="w-full text-[13px] table-fixed">
               <thead>
                 <tr className="text-left text-muted-foreground">
-                  <th className="font-medium px-5 py-3">Candidate</th>
+                  <th className="font-medium px-5 py-3 w-[40%]">Candidate</th>
                   <th className="font-medium px-5 py-3">Job</th>
-                  <th className="font-medium px-5 py-3">Stage</th>
-                  <th className="font-medium px-5 py-3">AI</th>
-                  <th className="font-medium px-5 py-3">Applied</th>
-                  <th className="font-medium px-5 py-3">Status</th>
+                  <th className="font-medium px-5 py-3 w-[110px]">Stage</th>
+                  <th className="font-medium px-5 py-3 w-[60px]">AI</th>
+                  <th className="font-medium px-5 py-3 w-[80px]">Applied</th>
                 </tr>
               </thead>
               <tbody>
@@ -275,7 +274,7 @@ function Dashboard() {
                   return (
                     <tr key={row.id} className="border-t border-[#1E1E22] hover:bg-[#1A1A1E] transition-colors">
                       <td className="px-5 py-3">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
                           <div className="rounded-full bg-[#1E1E22] text-white flex items-center justify-center shrink-0" style={{ width: 32, height: 32, fontSize: 12, fontWeight: 500 }}>
                             {initials(name) || "?"}
                           </div>
@@ -285,7 +284,7 @@ function Dashboard() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-3 text-foreground">{row.job?.title}</td>
+                      <td className="px-5 py-3 text-foreground truncate" title={row.job?.title}>{row.job?.title}</td>
                       <td className="px-5 py-3"><StageBadge stage={row.current_stage} /></td>
                       <td className="px-5 py-3">
                         {row.ai_score != null ? (() => {
@@ -297,8 +296,7 @@ function Dashboard() {
                           );
                         })() : <span className="text-muted-foreground">—</span>}
                       </td>
-                      <td className="px-5 py-3 text-muted-foreground">{relTime(row.applied_at)}</td>
-                      <td className="px-5 py-3"><StatusBadge status={row.status} /></td>
+                      <td className="px-5 py-3 text-muted-foreground whitespace-nowrap">{compactRel(row.applied_at)}</td>
                     </tr>
                   );
                 })}
