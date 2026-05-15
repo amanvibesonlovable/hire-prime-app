@@ -18,6 +18,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import logoUrl from "@/assets/meridian-logo.png";
+import { useForceDark } from "@/lib/theme";
 
 const NAV_LINKS = [
   { id: "features", label: "Features" },
@@ -928,6 +929,7 @@ function Footer() {
 }
 
 export function LandingPage() {
+  useForceDark();
   const ref = useReveal();
   return (
     <div ref={ref as React.RefObject<HTMLDivElement>} className="min-h-screen bg-background text-foreground" style={{ scrollBehavior: "smooth" }}>

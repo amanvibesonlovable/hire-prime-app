@@ -9,12 +9,14 @@ import { Label } from "@/components/ui/label";
 import { DepartmentBadge } from "@/components/StatusBadge";
 import { toast } from "sonner";
 import { useDocumentTitle } from "@/lib/useDocumentTitle";
+import { useForceDark } from "@/lib/theme";
 
 export const Route = createFileRoute("/apply/$jobId")({
   component: ApplyPage,
 });
 
 function ApplyPage() {
+  useForceDark();
   const { jobId } = Route.useParams();
   const job = useQuery({
     queryKey: ["public-job", jobId],
