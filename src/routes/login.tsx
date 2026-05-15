@@ -7,6 +7,7 @@ import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/lib/auth";
 import { useDocumentTitle } from "@/lib/useDocumentTitle";
 import logoUrl from "@/assets/meridian-logo.png";
+import { useForceDark } from "@/lib/theme";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
+  useForceDark();
   useDocumentTitle("Meridian — Sign In");
   const navigate = useNavigate();
   const { session, loading } = useAuth();
