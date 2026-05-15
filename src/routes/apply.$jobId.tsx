@@ -184,6 +184,8 @@ function ApplyPage() {
         <div className="text-center py-10 text-muted-foreground text-sm">
           This position is no longer accepting applications.
         </div>
+      ) : cooldown ? (
+        <CooldownScreen lastAppliedAt={cooldown.lastAppliedAt} cooldownDays={COOLDOWN_DAYS} />
       ) : done ? (
         <div className="text-center py-8 space-y-3 animate-in fade-in zoom-in-95 duration-200">
           <div className="mx-auto h-14 w-14 rounded-full bg-success/15 flex items-center justify-center">
@@ -201,7 +203,21 @@ function ApplyPage() {
             <Field label="First Name *" error={errors.first}><Input value={first} onChange={(e) => setFirst(e.target.value)} className={errors.first ? "border-danger" : ""} /></Field>
             <Field label="Last Name *" error={errors.last}><Input value={last} onChange={(e) => setLast(e.target.value)} className={errors.last ? "border-danger" : ""} /></Field>
           </div>
-          <Field label="Email *" error={errors.email}><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={errors.email ? "border-danger" : ""} /></Field>
+          <Field label="Email *" error={errors.email}>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={onEmailBlur}
+              className={errors.email ? "border-danger" : ""}
+            />
+            {emailWarning && (
+              <p className="mt-1.5 flex items-start gap-1.5 text-[13px]" style={{ color: "#F59E0B" }}>
+                <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                <span>You've recently applied. You can submit a new application after {emailWarning.endsAt}.</span>
+              </p>
+            )}
+          </Field>
           <Field label="Phone"><Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} /></Field>
           <Field label="LinkedIn Profile URL"><Input value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/yourprofile" /></Field>
 
@@ -227,7 +243,7 @@ function ApplyPage() {
             )}
           </Field>
 
-          <Button type="submit" className="w-full h-9" disabled={busy}>
+          <Button type="submit" className="w-full h-9" disabled={busy || !!emailWarning}>
             {busy ? "Submitting..." : "Submit Application"}
           </Button>
         </form>
