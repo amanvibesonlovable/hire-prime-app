@@ -51,9 +51,9 @@ function scoreColors(score: number) {
 
 function recBadge(rec: string | null) {
   if (rec === "Strong Yes") return { bg: "#22C55E15", color: "#22C55E", label: "Strong Hire" };
-  if (rec === "Yes") return { bg: "#3B82F615", color: "#3B82F6", label: "Top Match" };
-  if (rec === "Maybe") return { bg: "#F59E0B15", color: "#F59E0B", label: "Potential" };
-  if (rec === "No") return { bg: "#EF444415", color: "#EF4444", label: "Not a Match" };
+  if (rec === "Yes") return { bg: "#3B82F615", color: "#3B82F6", label: "Recommended" };
+  if (rec === "Maybe") return { bg: "#F59E0B15", color: "#F59E0B", label: "Worth Reviewing" };
+  if (rec === "No") return { bg: "#EF444415", color: "#EF4444", label: "Low Match" };
   return null;
 }
 
