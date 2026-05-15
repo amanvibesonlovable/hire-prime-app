@@ -116,7 +116,8 @@ export function Sidebar({
         </TooltipProvider>
       </nav>
 
-      <div className="p-2 border-t border-sidebar-border">
+      <div className="p-2 border-t border-sidebar-border space-y-1">
+        <ThemeToggle iconOnly={iconOnly} />
         <TooltipProvider delayDuration={150}>
           <Popover>
             {iconOnly ? (
