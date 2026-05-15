@@ -91,9 +91,51 @@
   --sidebar-primary-foreground: #FAFAFA;
 }
 
+html.light {
+  color-scheme: light;
+  --background: #F8F9FB;
+  --foreground: #111827;
+  --surface: #FFFFFF;
+  --surface-hover: #F3F4F6;
+  --card: #FFFFFF;
+  --card-foreground: #111827;
+  --popover: #FFFFFF;
+  --popover-foreground: #111827;
+  --primary: #3B82F6;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #2563EB;
+  --secondary: #F3F4F6;
+  --secondary-foreground: #111827;
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
+  --accent: #F3F4F6;
+  --accent-foreground: #111827;
+  --violet: #8B5CF6;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #E5E7EB;
+  --border-strong: #D1D5DB;
+  --input: #E5E7EB;
+  --ring: #3B82F6;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #111827;
+  --sidebar-accent: #F3F4F6;
+  --sidebar-accent-foreground: #111827;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #3B82F6;
+  --sidebar-primary: #3B82F6;
+  --sidebar-primary-foreground: #FFFFFF;
+}
+
 @layer base {
   html {
     color-scheme: dark;
+  }
+  body, aside, header, main, section, article, table, thead, tbody, tr, td, th, .card, [class*="bg-"], [class*="border-"], [class*="text-"] {
+    transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
   }
   * {
     border-color: var(--color-border);
