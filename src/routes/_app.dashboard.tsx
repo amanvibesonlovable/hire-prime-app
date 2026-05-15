@@ -419,9 +419,13 @@ function Dashboard() {
                 </div>
                 <div className="min-w-0">
                   <div className="text-[12px] text-[#71717A]">Bottleneck (Time in Stage)</div>
-                  <div className="flex items-baseline gap-2">
+                  <div className="flex items-baseline gap-2 flex-wrap">
                     <div className="text-[16px] font-medium text-foreground">{analytics.data.bottleneck.stage}</div>
-                    <div className="text-[20px] font-mono font-semibold text-foreground">{analytics.data.bottleneck.avg.toFixed(1)}d</div>
+                    <div className="text-[20px] font-mono font-semibold text-foreground">
+                      {analytics.data.bottleneck.avg.toFixed(1)}
+                      <span className="text-[14px] font-sans font-normal text-[#71717A] ml-1">days</span>
+                    </div>
+                    <span className="text-[12px] text-[#71717A]">—</span>
                   </div>
                 </div>
               </div>
