@@ -243,7 +243,7 @@ function Dashboard() {
       </section>
 
       {/* 3-column row */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_minmax(0,360px)_minmax(0,360px)] gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* Recent Applications */}
         <section className="rounded-xl border border-[#1E1E22] bg-[#141416] overflow-hidden xl:col-span-1">
           <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E1E22]">
