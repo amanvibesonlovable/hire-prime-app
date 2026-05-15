@@ -50,7 +50,7 @@ function AppLayout() {
       <div className="flex-1 min-w-0 flex flex-col">
         <TopBar title={title} onMobileMenu={() => setMobileOpen(true)} />
         <main className="flex-1">
-          <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-6 md:py-8">
+          <div className="max-w-[1440px] mx-auto px-6 md:px-10 py-6 md:py-8">
             <Outlet />
           </div>
         </main>
