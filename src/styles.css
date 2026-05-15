@@ -204,3 +204,72 @@ html.light {
   .dash-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
   .dash-scroll { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.10) transparent; }
 }
+
+/* ============================================================
+   Light mode overrides for hardcoded hex utility classes used
+   throughout the app. Pragmatic broad strokes — preserves dark
+   look when html.dark, swaps to light surfaces otherwise.
+   ============================================================ */
+html.light .skeleton {
+  background: linear-gradient(90deg, #E5E7EB 0%, #F3F4F6 50%, #E5E7EB 100%);
+  background-size: 200% 100%;
+}
+html.light .scrollbar-thin::-webkit-scrollbar-thumb { background: #D1D5DB; }
+html.light .dash-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); }
+html.light .dash-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
+html.light .dash-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+html.light .dash-scroll { scrollbar-color: rgba(0,0,0,0.15) transparent; }
+
+/* Backgrounds — dark surfaces become white/light surfaces */
+html.light .bg-\[\#0A0A0B\],
+html.light .bg-\[\#09090B\],
+html.light .bg-\[\#0B0B0D\] { background-color: #F8F9FB !important; }
+
+html.light .bg-\[\#0F0F11\],
+html.light .bg-\[\#0F1115\],
+html.light .bg-\[\#0C0F16\],
+html.light .bg-\[\#101012\] { background-color: #FFFFFF !important; }
+
+html.light .bg-\[\#141416\],
+html.light .bg-\[\#16161A\],
+html.light .bg-\[\#18181B\] { background-color: #FFFFFF !important; }
+
+html.light .bg-\[\#1A1A1E\],
+html.light .bg-\[\#1E1E22\],
+html.light .bg-\[\#1F1F23\],
+html.light .bg-\[\#202024\] { background-color: #F3F4F6 !important; }
+
+html.light .bg-\[\#2A2A2E\],
+html.light .bg-\[\#27272A\] { background-color: #E5E7EB !important; }
+
+/* Borders */
+html.light .border-\[\#1E1E22\],
+html.light .border-\[\#1A1A1E\],
+html.light .border-\[\#202024\],
+html.light .border-\[\#27272A\],
+html.light .border-\[\#2A2A2E\] { border-color: #E5E7EB !important; }
+
+/* Text — washed-out greys become tasteful slate */
+html.light .text-white { color: #111827 !important; }
+html.light .text-\[\#FAFAFA\],
+html.light .text-\[\#F4F4F5\],
+html.light .text-\[\#E4E4E7\] { color: #111827 !important; }
+html.light .text-\[\#D4D4D8\],
+html.light .text-\[\#A1A1AA\] { color: #374151 !important; }
+html.light .text-\[\#9CA3AF\],
+html.light .text-\[\#71717A\],
+html.light .text-\[\#6B7280\] { color: #6B7280 !important; }
+html.light .text-\[\#52525B\],
+html.light .text-\[\#3F3F46\] { color: #9CA3AF !important; }
+
+/* Slate-400/500 muted text → keep as-is, both legible */
+
+/* white/opacity overlays used in glassmorphism — invert to black overlays */
+html.light .bg-white\/5  { background-color: rgba(0,0,0,0.03) !important; }
+html.light .bg-white\/10 { background-color: rgba(0,0,0,0.05) !important; }
+html.light .border-white\/5  { border-color: rgba(0,0,0,0.05) !important; }
+html.light .border-white\/8,
+html.light .border-white\/10 { border-color: #E5E7EB !important; }
+
+/* Common dashboard inline backgrounds via style="" can't be overridden here —
+   those will visually carry over slightly but remain readable on light. */
