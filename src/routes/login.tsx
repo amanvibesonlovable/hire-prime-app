@@ -74,7 +74,7 @@ function LoginPage() {
     <div className="min-h-screen w-full flex relative overflow-hidden" style={{ background: "#0A0A0B" }}>
       {/* Top-left logo */}
       <div className="absolute top-6 left-8 z-20 flex items-center gap-2.5">
-        <img src={logoUrl} alt="Meridian" style={{ height: 28, width: "auto" }} />
+        <img src={logoUrl} alt="Meridian" style={{ height: 36, width: "auto" }} />
         <span className="font-mono font-semibold text-[14px] tracking-[0.15em] text-white">MERIDIAN</span>
       </div>
 
@@ -241,7 +241,7 @@ function LoginPage() {
         >
           {/* Logo + brand */}
           <div className="flex flex-col items-center text-center">
-            <img src={logoUrl} alt="Meridian" style={{ height: 48, width: "auto" }} />
+            <img src={logoUrl} alt="Meridian" style={{ height: 56, width: "auto" }} />
             <div
               className="mt-3 rounded-full"
               style={{
