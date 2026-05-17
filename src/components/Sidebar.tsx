@@ -56,7 +56,7 @@ export function Sidebar({
       >
         <Link to="/dashboard" className="flex items-center" aria-label="Meridian home">
           {iconOnly ? (
-            <img src={meridianLogo} alt="Meridian" style={{ height: 28, width: "auto" }} />
+            <img src={meridianLogo} alt="Meridian" style={{ height: 36, width: "auto" }} />
           ) : (
             <span className="font-mono font-semibold text-base tracking-[0.1em] text-foreground">MERIDIAN</span>
           )}

@@ -77,7 +77,7 @@ function smoothScrollTo(id: string) {
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function LogoMark({ size = 28, className = "" }: { size?: number; className?: string }) {
+function LogoMark({ size = 36, className = "" }: { size?: number; className?: string }) {
   return (
     <img
       src={logoUrl}
